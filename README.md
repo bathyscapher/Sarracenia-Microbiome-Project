@@ -1,2 +1,2 @@
 # Sarracenia Microbiome Project
-The cross-continental collaboration to compare pitcher fluid microbiomes of *Sarracenia* species.
+The cross-continental comparison of pitcher fluid microcosms of *Sarracenia* species.
