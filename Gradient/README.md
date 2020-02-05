@@ -1,0 +1,1 @@
+[OTUs](https://en.wikipedia.org/wiki/Operational_taxonomic_unit) were constructed from the raw reads with [mothur](https://www.mothur.org/) mainly following the [MiSeq SOP](https://www.mothur.org/wiki/MiSeq_SOP) and processed with the R package [phyloseq](https://joey711.github.io/phyloseq/index.html).
