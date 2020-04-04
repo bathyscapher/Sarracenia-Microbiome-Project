@@ -1,5 +1,5 @@
 # Preprocess sequence files
-## Demultiplexing Illumina FASTQ with R1, R2 and I1
+## Demultiplex Illumina FASTQ with R1, R2 and I1
 If necessary (Bittleston), samples were demultiplexed with [mothur](https://mothur.org/):
 
 ```bash
@@ -22,7 +22,7 @@ barcode	ACCCAAGCGTTA	NONE    Sample03
 
 
 ## Demultiplex 454 Roche SFF and convert to FASTQ
-Demultiplex into SFFs and convert to FASTQ with [mothur](https://mothur.org/):
+Demultiplex into SFFs and after, convert to FASTQ with [mothur](https://mothur.org/):
 ```mothur
 sffinfo(sff=geographic.sff, oligos=its_geo.oligo, flow=F)
 make.fastq(fasta=geographic.fasta)
@@ -59,9 +59,15 @@ rename -n 's/geographic.//' *q.gz
 
 ## Young
 ```bash
-for run in {1..2}; do rename 's/_/-/' *fastq.gz; done
+rename -n 's/Young16S\d{1,2}_/16S-/' *fastq
+rename -n 's/Young18S\d{1,2}_/18S-/' *fastq
 
-gzip *fastq
-rename -n 's/temporal.//' *q.gz
-rename -n 's/geographic.//' *q.gz
+rename -n 's/L001_//' *fastq
+rename -n 's/_001//' *fastq
+```
+
+
+## Young Greenhouse
+```bash
+for run in {1..2}; do rename 's/_/-/' *fastq.gz; done
 ```
