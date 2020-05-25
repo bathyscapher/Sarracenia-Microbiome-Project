@@ -70,6 +70,7 @@ REV <- "TCCTCCGCTTATTGATATGC" # ITS4
 # FWD <- "CCATCTCATCCCTGCGTGTCTCCGACTCAG" # 454 "A" primer
 # REV <- "CCTATCCCCTGTGTGCCTTGGCAGTCTCAG" # 454 "B" primer
 
+
 ## Compile all orientations of the primers
 allOrients <- function(primer) {
   dna <- DNAString(primer)
@@ -120,18 +121,19 @@ for(i in seq_along(rF)) {
 }
 
 
+## Compare reads before/after
 (reads <- ceiling(runif(1, 1, length(rF.cut))))
-rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = rF.cut[[reads]]),
-      REV.ForwardReads = sapply(REV.orients, primerHits, fn = rF.cut[[reads]]))
-
 rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = rF.fN[[reads]]),
       REV.ForwardReads = sapply(REV.orients, primerHits, fn = rF.fN[[reads]]))
 
+rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = rF.cut[[reads]]),
+      REV.ForwardReads = sapply(REV.orients, primerHits, fn = rF.cut[[reads]]))
+
 
 ### Filter and trim. Place filtered files in filtered/ subdirectory
-rF.f <- file.path("filtered", paste0(sample.names, "_filt.fastq.gz"))
+rF.cut.f <- file.path("filtered", paste0(sample.names, "_filt.fastq.gz"))
 
-names(rF.f) <- sample.names
+names(rF.cut.f) <- sample.names
 
 
 ### Filtering, min and max values as in Boynton et al. 2019
@@ -139,7 +141,7 @@ filt <- filterAndTrim(rF.cut, rF.cut.f, minLen = 200, maxLen = 1000,
                       maxN = 0, rm.phix = TRUE, truncQ = 2,
                       compress = TRUE, multithread = ncore, verbose = TRUE)
 
-names(rF.f) <- sample.names
+# names(rF.cut.f) <- sample.names
 
 
 ### Read quality profiles exemplarily
@@ -147,28 +149,29 @@ set.seed(74398)
 startPlot <- ceiling(runif(1, 0, length(rF) - 3))
 
 plot.rF <- plotQualityProfile(rF[startPlot:(startPlot + 2)])
-plot.rF.f <- plotQualityProfile(rF.f[startPlot:(startPlot + 2)])
+plot.rF.cut.f <- plotQualityProfile(rF.cut.f[startPlot:(startPlot + 2)])
 
-grid.arrange(plot.rF, plot.rF.f, nrow = 2)
+grid.arrange(plot.rF, plot.cut.rF.f, nrow = 2)
 
 
 ### Estimate and plot the error rates
-errF <- learnErrors(rF.f, multithread = ncore, verbose = TRUE)
+errF <- learnErrors(rF.cut.f, multithread = ncore, verbose = TRUE)
 
 plotErrors(errF, nominalQ = TRUE)
 
 
 ## Dereplicate identical reads
-derep.rF <- derepFastq(rF.f, verbose = TRUE)
+derep.rF <- derepFastq(rF.cut.f, verbose = TRUE)
 names(derep.rF) <- sample.names
 
 
 ### Core sample inference algorithm
 dadaF <- dada(derep.rF, errF, HOMOPOLYMER_GAP_PENALTY = -1, BAND_SIZE = 32,
               multithread = ncore)
-# dadaFs[[1]]
+# dadaF[[1]]
 
-# saveRDS(dadaF, "dadaF_PB.rds")
+
+saveRDS(dadaF, "dadaF_PB.rds")
 
 
 ### Construct ASV table
@@ -185,7 +188,6 @@ plot(table(nchar(getSequences(seqtab))))
 seqtab.nochim <- removeBimeraDenovo(seqtab, method = "consensus",
                                     multithread = ncore, verbose = TRUE)
 dim(seqtab.nochim)
-
 sum(seqtab.nochim) / sum(seqtab)
 
 
@@ -204,13 +206,24 @@ rownames(track) <- sample.names
 head(track)
 
 
+### Assign taxonomy with RDP classifier
+seqtab.nochim <- readRDS("seqtab.nochim_PB.rds")
+
+taxa <- assignTaxonomy(seqtab.nochim,
+                       "~/Desktop/SMP_unsynced/silva/unite/sh_refs_qiime_ver8_dynamic_s_02.02.2019.fasta",
+                       multithread = TRUE, verbose = TRUE)
+
+
+saveRDS(taxa, "taxa_PB.rds")
+
+
 ### Assign taxonomy with IdTaxa and SILVA
 dna <- DNAStringSet(getSequences(seqtab.nochim))
 
 load("~/Desktop/SMP_unsynced/silva/UNITE_v2020_February2020.RData")
 
 
-ids <- IdTaxa(dna, trainingSet, strand = "top", processors = ncore,
+ids <- IdTaxa(dna, trainingSet, strand = "both", processors = ncore,
               verbose = TRUE)
 ranks <- c("domain", "phylum", "class", "order", "family", "genus", "species")
 

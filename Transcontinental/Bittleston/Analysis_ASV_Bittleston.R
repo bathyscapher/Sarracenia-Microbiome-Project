@@ -11,18 +11,18 @@ library("ggplot2")
 theme_set(theme_bw(base_size = 20))
 
 
-setwd("/scratch/pSMP/16S_raw_data_2015/FASTQ/")
-# setwd("/scratch/pSMP/18S_raw_data_2015/FASTQ/")
+# setwd("/scratch/pSMP/16S_raw_data_2015/FASTQ/")
+setwd("/scratch/pSMP/18S_raw_data_2015/FASTQ/")
 
 
 ################################################################################
 ### ASV
 seqtab.nochim <- readRDS("seqtab.nochim_LB.rds")
-tax.id <- readRDS("taxa.id_LB.rds")
+taxa.id <- readRDS("taxa.id_LB.rds")
 
 
 eb <- phyloseq(otu_table(seqtab.nochim, taxa_are_rows = FALSE),
-               tax_table(tax.id))
+               tax_table(taxa.id))
 
 
 dna <- Biostrings::DNAStringSet(taxa_names(eb))

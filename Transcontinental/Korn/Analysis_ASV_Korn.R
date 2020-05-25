@@ -12,7 +12,8 @@ theme_set(theme_bw(base_size = 20) +
             theme(rect = element_rect(fill = "transparent")))
 
 
-setwd("/scratch/pSMP/Korn/")
+# setwd("/scratch/pSMP/Korn/SMP_16S_reseq/")
+setwd("/scratch/pSMP/Korn/SMP_18S_reseq/")
 
 
 ################################################################################
@@ -36,27 +37,31 @@ colnames(tax_table(rk)) <- c("Domain", "Phylum", "Class", "Order", "Family",
                               "Genus", "Species")
 rk
 
+sample_names(rk)
+
 rkMeta <- read.table("~/Sarracenia-Microbiome-Project/Transcontinental/Korn/SMP_Pool_rk.csv",
                      sep = "\t", header = TRUE)
 
 rkMeta <- sample_data(rkMeta)
-row.names(rkMeta) <- rkMeta$Sample
+row.names(rkMeta) <- rkMeta$ID
 
 rk <- merge_phyloseq(rk, rkMeta)
-# sample_data(rk)
+sample_data(rk)
 sample_variables(rk)
+rk
 
 
 ################################################################################
 ### Plot overview
 
-plot_bar(rk, x = "Phylum", fill = "Dataset") +
+plot_bar(rk, x = "Phylum", fill = "Habitat") +
   # facet_wrap( ~ Class, scales = "free", nrow = 1) +
-  geom_bar(aes(color = Dataset, fill = Dataset),
+  geom_bar(aes(color = Habitat, fill = Habitat),
            stat = "identity", position = "stack") +
   theme(legend.position = "top") +
   ylab("Abundance [%]") +
   coord_flip()
+# ggsave("RK_16S_Phyla.pdf", width = 20, height = 20, bg = "transparent")
 ggsave("RK_18S_Phyla.pdf", width = 20, height = 20, bg = "transparent")
 
 

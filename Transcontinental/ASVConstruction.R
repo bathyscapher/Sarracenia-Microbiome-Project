@@ -1,34 +1,35 @@
 ################################################################################
 ################################################################################
-### SMP ASV Young data
+### SMP ASV all data
 ################################################################################
+
+rm(list = ls())
+
+# setwd("/scratch/pSMP/16S_raw_data_2015/FASTQ/")
+setwd("/scratch/pSMP/18S_raw_data_2015/FASTQ/")
 
 
 library("dada2")
 library("ShortRead")
+library("Biostrings")
 library("DECIPHER")
 library("gridExtra")
 
-
-rm(list = ls())
-
-
-setwd("/scratch/pSMP/Young/prok")
-# setwd("/scratch/pSMP/Young/euk")
 
 ncore <- 8 # specify number of available cores
 
 
 ################################################################################
 ### Read fastq
-list.files(pattern = "fastq")
+list.files(pattern = "fastq.gz")
 
 rF <- sort(list.files(pattern = "R1", full.names = TRUE))
 rR <- sort(list.files(pattern = "R2", full.names = TRUE))
 
 
 ## Extract sample names
-sample.names <- sapply(strsplit(basename(rF), "_"), `[`, 1)
+sample.names <- sapply(strsplit(basename(rF), "_"), `[`, 2)
+sample.names <- gsub(".fastq.gz", "", sample.names)
 
 
 ### Check for primers
@@ -39,13 +40,12 @@ rR.fN <- file.path("filtN", basename(rR))
 filterAndTrim(rF, rF.fN, rR, rR.fN, maxN = 0, multithread = TRUE)
 
 
-## Forward and reverse primer (choose either 16S or 18S)
-FWD <- "ACTCCTACGGRAGGCAGCAG" # F338
-REV <- "TACNVGGGTATCTAATCC" # R802
+## Forward and reverse primer
+# FWD <- "GTGYCAGCMGCCGCGGTAA" # 515FB
+# REV <- "GGACTACNVGGGTWTCTAAT" # 806RB
 
-# FWD <- "TCCAAGGAAGGCAGCAGG" # F426
-# REV <- "AGTCCTATTCCATTATTCCATG" # R853
-
+FWD <- "CCCTGCCHTTTGTACACAC" # 18S EMP primer
+REV <- "CCTTCYGCAGGTTCACCTAC" #
 
 ## Compile all orientations of the primers
 allOrients <- function(primer) {
@@ -64,6 +64,13 @@ primerHits <- function(primer, fn) {
   nhits <- vcountPattern(primer, sread(readFastq(fn)), fixed = FALSE)
   return(sum(nhits > 0))
 }
+
+## Randomly draw sequences and check if they contain primers
+(reads <- ceiling(runif(1, 1, length(rF.fN))))
+rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = rF.fN[[reads]]),
+      FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = rR.fN[[reads]]),
+      REV.ForwardReads = sapply(REV.orients, primerHits, fn = rF.fN[[reads]]),
+      REV.ReverseReads = sapply(REV.orients, primerHits, fn = rR.fN[[reads]]))
 
 
 ## Cut the primers
@@ -85,7 +92,6 @@ REV.RC <- dada2:::rc(REV)
 R1.flags <- paste("-g", FWD, "-a", REV.RC)
 R2.flags <- paste("-G", REV, "-A", FWD.RC)
 
-
 ## Run Cutadapt
 for(i in seq_along(rF)) {
   system2(cutadapt, args = c(R1.flags, R2.flags, "-n", 2,
@@ -94,7 +100,7 @@ for(i in seq_along(rF)) {
 }
 
 
-## Compare primers before and after trimming
+## Compare primers beforeand after trimming
 (reads <- ceiling(runif(1, 1, length(rF.cut))))
 rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = rF.fN[[reads]]),
       FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = rR.fN[[reads]]),
@@ -108,12 +114,12 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = rF.cut[[reads]]),
 
 ### Filter and trim. Place filtered files in filtered/ subdirectory
 ## 16S
-rF.cut.f <- file.path("filtered", paste0(sample.names, "_16S_R1_filt.fastq.gz"))
-rR.cut.f <- file.path("filtered", paste0(sample.names, "_16S_R2_filt.fastq.gz"))
+# rF.cut.f <- file.path("filtered", paste0(sample.names, "_16S_R1_filt.fastq.gz"))
+# rR.cut.f <- file.path("filtered", paste0(sample.names, "_16S_R2_filt.fastq.gz"))
 
 ## 18S
-# rF.cut.f <- file.path("filtered", paste0(sample.names, "_18S_R1_filt.fastq.gz"))
-# rR.cut.f <- file.path("filtered", paste0(sample.names, "_18S_R2_filt.fastq.gz"))
+rF.cut.f <- file.path("filtered", paste0(sample.names, "_18S_R1_filt.fastq.gz"))
+rR.cut.f <- file.path("filtered", paste0(sample.names, "_18S_R2_filt.fastq.gz"))
 
 names(rF.cut.f) <- sample.names
 names(rR.cut.f) <- sample.names
@@ -121,12 +127,12 @@ names(rR.cut.f) <- sample.names
 
 ### Quality filtering
 out <- filterAndTrim(rF.fN, rF.cut.f, rR.fN, rR.cut.f,
-                     maxN = 0, maxEE = c(2, 2), minLen = 100,
+                     maxN = 0, maxEE = c(2, 2),
                      truncQ = 2, rm.phix = TRUE,
                      compress = TRUE, multithread = ncore, verbose = TRUE)
 
 
-### Read quality profiles exemplarily
+### Plot quality profiles exemplarily
 set.seed(74398)
 startPlot <- ceiling(runif(1, 0, length(rF) - 3))
 
@@ -143,7 +149,6 @@ grid.arrange(plot.rF, plot.rR, plot.rF.f, plot.rR.f, ncol = 2)
 errF <- learnErrors(rF.cut.f, multithread = ncore, verbose = TRUE)
 errR <- learnErrors(rR.cut.f, multithread = ncore, verbose = TRUE)
 
-
 plotErrors(errF, nominalQ = TRUE)
 plotErrors(errR, nominalQ = TRUE)
 
@@ -154,8 +159,8 @@ dadaR <- dada(rR.cut.f, err = errR, multithread = ncore)
 # dadaFs[[1]]
 
 
-saveRDS(dadaF, "dadaF_EY.rds")
-saveRDS(dadaR, "dadaR_EY.rds")
+saveRDS(dadaF, "dadaF_LB.rds")
+saveRDS(dadaR, "dadaR_LB.rds")
 
 
 ### Merge paired reads
@@ -163,7 +168,7 @@ contigs <- mergePairs(dadaF, rF.cut.f, dadaR, rR.cut.f, verbose = TRUE)
 head(contigs[[1]])
 
 
-saveRDS(contigs, "contigs_EY.rds")
+saveRDS(contigs, "contigs_LB.rds")
 
 
 ### Construct ASV table
@@ -182,8 +187,8 @@ dim(seqtab.nochim)
 
 sum(seqtab.nochim) / sum(seqtab)
 
+saveRDS(seqtab.nochim, "seqtab.nochim_LB.rds")
 
-saveRDS(seqtab.nochim, "seqtab.nochim_EY.rds")
 
 
 ### Track reads through the pipeline
@@ -200,19 +205,10 @@ rownames(track) <- sample.names
 head(track)
 
 
-### Assign taxonomy with RDP classifier
-taxa <- assignTaxonomy(seqtab.nochim,
-                       "~/Desktop/SMP_unsynced/silva/silva_nr_v132_train_set.fa.gz",
-                       multithread = TRUE, verbose = TRUE)
-
-saveRDS(taxa, "taxa_EY.rds")
-
-
 ### Assign taxonomy with IdTaxa and SILVA
 dna <- DNAStringSet(getSequences(seqtab.nochim))
 
 load("~/Desktop/SMP_unsynced/silva/SILVA_SSU_r138_2019.RData")
-
 
 ids <- IdTaxa(dna, trainingSet, strand = "top", processors = ncore,
               verbose = TRUE)
@@ -230,7 +226,7 @@ taxa.id <- t(sapply(ids, function(x) {
 colnames(taxa.id) <- ranks
 rownames(taxa.id) <- getSequences(seqtab.nochim)
 
-saveRDS(taxa.id, "taxa.id_EY.rds")
+saveRDS(taxa.id, "taxa.id_LB.rds")
 
 
 ################################################################################

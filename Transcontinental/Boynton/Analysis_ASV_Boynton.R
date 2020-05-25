@@ -50,13 +50,15 @@ sample_variables(pb)
 ################################################################################
 ### Plot overview
 
-plot_bar(pb, x = "Domain", fill = "Country") +
+plot_bar(pb, x = "Family", fill = "Dataset") +
   # facet_wrap( ~ Class, scales = "free", nrow = 1) +
   geom_bar(aes(color = Dataset, fill = Dataset),
            stat = "identity", position = "stack") +
   theme(legend.position = "top") +
-  ylab("Abundance [%]") +
+  ylab("Abundance") +
   coord_flip()
+# ggsave("PB_ITS_Geographic_Phyla.pdf", width = 20, height = 20)
+ggsave("PB_ITS_Temporal_Phyla.pdf", width = 20, height = 20)
 
 
 ################################################################################
