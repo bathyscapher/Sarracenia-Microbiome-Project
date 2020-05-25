@@ -226,7 +226,6 @@ ids <- IdTaxa(dna, trainingSet, strand = "top", processors = ncore,
 taxa.id <- t(sapply(ids, function(x) {
   m <- match(ranks, x$rank)
   taxa <- x$taxon[m]
-  # taxa[startsWith(taxa, "unclassified_")] <- NA
   taxa
 }))
 

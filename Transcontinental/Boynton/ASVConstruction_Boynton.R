@@ -18,6 +18,9 @@ library("gridExtra")
 setwd("/scratch/pSMP/Boynton/temp/")
 
 
+ncore <- 9 # specify number of available cores
+
+
 ################################################################################
 ## SFF read lenght
 # sff.geo <- readSffGeometry("/scratch/pSMP/Boynton/geo/geographic.sff")
@@ -33,11 +36,6 @@ setwd("/scratch/pSMP/Boynton/temp/")
 # plot(sff.temp$Read_Widths)
 # abline(h = mean(sff.temp$Read_Widths), col = "red")
 # dev.off()
-
-
-################################################################################
-## Specify number of available cores
-ncore <- 8
 
 
 ################################################################################
@@ -58,17 +56,8 @@ filterAndTrim(rF, rF.fN, maxN = 0, multithread = TRUE)
 
 
 ## Forward and reverse primer
-# FWD <- "CTGCGGAAGGATCATTACAGT" # C. pseudoglaebosa
-# REV <- "TGTTCAGACAACACTGTTCA"
-# FWD <- "AAGTCGTAACAAGGTTTCCG" # R. babjevae
-# REV <- "CCCAACTCGGCTCTAGTAA"
-# FWD <- "GGTAATGCGGTCGTCTAAAA" # M. aphidis
-# REV <- "CTCTTCCAAAGAAGCGAGG"
-
 FWD <- "CTTGGTCATTTAGAGGAAGTAA" # ITS1F
 REV <- "TCCTCCGCTTATTGATATGC" # ITS4
-# FWD <- "CCATCTCATCCCTGCGTGTCTCCGACTCAG" # 454 "A" primer
-# REV <- "CCTATCCCCTGTGTGCCTTGGCAGTCTCAG" # 454 "B" primer
 
 
 ## Compile all orientations of the primers
@@ -113,7 +102,8 @@ R1.flags <- paste("-g", FWD, "-a", REV.RC)
 R2.flags <- paste("-g", REV, "-a", FWD.RC)
 # R2.flags <- paste("-G", REV, "-A", FWD.RC)
 
-# Run Cutadapt
+
+## Run Cutadapt
 for(i in seq_along(rF)) {
   system2(cutadapt, args = c(R1.flags, R2.flags, "-n", 2,
                              "-o", rF.cut[i], # output
@@ -121,11 +111,10 @@ for(i in seq_along(rF)) {
 }
 
 
-## Compare reads before/after
+## Compare reads before and after
 (reads <- ceiling(runif(1, 1, length(rF.cut))))
 rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = rF.fN[[reads]]),
       REV.ForwardReads = sapply(REV.orients, primerHits, fn = rF.fN[[reads]]))
-
 rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = rF.cut[[reads]]),
       REV.ForwardReads = sapply(REV.orients, primerHits, fn = rF.cut[[reads]]))
 
@@ -140,8 +129,6 @@ names(rF.cut.f) <- sample.names
 filt <- filterAndTrim(rF.cut, rF.cut.f, minLen = 200, maxLen = 1000,
                       maxN = 0, rm.phix = TRUE, truncQ = 2,
                       compress = TRUE, multithread = ncore, verbose = TRUE)
-
-# names(rF.cut.f) <- sample.names
 
 
 ### Read quality profiles exemplarily
@@ -232,7 +219,6 @@ ranks <- c("domain", "phylum", "class", "order", "family", "genus", "species")
 taxa.id <- t(sapply(ids, function(x) {
   m <- match(ranks, x$rank)
   taxa <- x$taxon[m]
-  # taxa[startsWith(taxa, "unclassified_")] <- NA
   taxa
   }))
 

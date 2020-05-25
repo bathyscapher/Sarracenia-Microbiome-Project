@@ -15,7 +15,7 @@ rm(list = ls())
 
 setwd("/scratch/pSMP/Young_Greenhouse/")
 
-ncore <- 8 # specify number of available cores
+ncore <- 9 # specify number of available cores
 
 
 ################################################################################
@@ -213,7 +213,6 @@ ranks <- c("domain", "phylum", "class", "order", "family", "genus", "species")
 taxa.id <- t(sapply(ids, function(x) {
   m <- match(ranks, x$rank)
   taxa <- x$taxon[m]
-  # taxa[startsWith(taxa, "unclassified_")] <- NA
   taxa
   }))
 
