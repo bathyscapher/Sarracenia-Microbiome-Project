@@ -186,7 +186,9 @@ dim(seqtab.nochim)
 sum(seqtab.nochim) / sum(seqtab)
 
 
-saveRDS(seqtab.nochim, "seqtab.nochim_RK.rds")
+# saveRDS(seqtab.nochim, "seqtab.nochim_RK.rds")
+# seqtab.nochim <- readRDS("seqtab.nochim_RK.rds")
+
 
 
 ### Track reads through the pipeline
@@ -219,7 +221,7 @@ load("~/Desktop/SMP_unsynced/silva/SILVA_SSU_r138_2019.RData")
 
 ids <- IdTaxa(dna, trainingSet, strand = "top", processors = ncore,
               verbose = TRUE)
- ranks <- c("domain", "phylum", "class", "order", "family", "genus", "species")
+ranks <- c("domain", "phylum", "class", "order", "family", "genus", "species")
 
 
 ### Convert output object of class "Taxa"

@@ -173,7 +173,8 @@ dim(seqtab.nochim)
 sum(seqtab.nochim) / sum(seqtab)
 
 
-saveRDS(seqtab.nochim, "seqtab.nochim_EY_GH.rds")
+# saveRDS(seqtab.nochim, "seqtab.nochim_EY_GH.rds")
+seqtab.nochim <- readRDS("seqtab.nochim_EY_GH.rds")
 
 
 ### Track reads through the pipeline
@@ -219,7 +220,7 @@ taxa.id <- t(sapply(ids, function(x) {
 colnames(taxa.id) <- ranks
 rownames(taxa.id) <- getSequences(seqtab.nochim)
 
-# saveRDS(taxa.id, "taxa.id_EY_GH.rds")
+saveRDS(taxa.id, "taxa.id_EY_GH.rds")
 
 
 ################################################################################

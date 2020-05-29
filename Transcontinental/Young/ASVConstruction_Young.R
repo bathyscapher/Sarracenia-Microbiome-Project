@@ -13,8 +13,8 @@ library("gridExtra")
 rm(list = ls())
 
 
-setwd("/scratch/pSMP/Young/prok")
-# setwd("/scratch/pSMP/Young/euk")
+# setwd("/scratch/pSMP/Young/prok")
+setwd("/scratch/pSMP/Young/euk")
 
 ncore <- 9 # specify number of available cores
 
@@ -183,7 +183,8 @@ dim(seqtab.nochim)
 sum(seqtab.nochim) / sum(seqtab)
 
 
-saveRDS(seqtab.nochim, "seqtab.nochim_EY.rds")
+# saveRDS(seqtab.nochim, "seqtab.nochim_EY.rds")
+seqtab.nochim <- readRDS("seqtab.nochim_EY.rds")
 
 
 ### Track reads through the pipeline

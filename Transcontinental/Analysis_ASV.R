@@ -35,6 +35,7 @@ wd <- c("/scratch/pSMP/16S_raw_data_2015/FASTQ/",
 ps.l <- c("eb.p", "eb.e", "pb.g", "pb.t", "rk.p", "rk.e", "ey.p", "ey.e", "ey.g")
 
 
+# i <- 5
 ### Read the ASV datasets
 for (i in 1:length(wd)) {
 
@@ -313,19 +314,18 @@ prok.nmds
 
 plot_ordination(prok.a, prok.nmds, shape = "Country",
                 # label = "Site",
-                color = "Habitat", title = NULL) +
-  stat_ellipse(aes(group = Habitat), type = "norm", linetype = 2, size = 0.2) +
-  # geom_point() +
+                color = "Site", title = NULL) +
+  # stat_ellipse(aes(group = Habitat), type = "norm", linetype = 2, size = 0.2) +
   # scale_colour_manual(values = gradCol) +
   coord_fixed(ratio = 1) +
   theme(legend.position = "top", legend.direction = "horizontal",
         legend.box = "vertical") +
-  geom_text(mapping = aes(label = ID), size = 1.5, vjust = 1.5) +
+  # geom_text(mapping = aes(label = ID), size = 1.5, vjust = 1.5) +
   guides(fill = guide_legend(nrow = 3, byrow = TRUE))
   # xlab("PCoA/MDS1 (95 % CI)") +
   # ylab("PCoA/MDS2 (95 % CI)")
 # ggsave("SMP_prok_nMDS.pdf", width = 12, height = 8.27, bg = "transparent")
-# ggsave("SMP_prok_PCoA.pdf", width = 12, height = 8.27, bg = "transparent")
+ggsave("SMP_prok_PCoA.pdf", width = 12, height = 8.27, bg = "transparent")
 # ggsave("SMP_prok_PCoA_Country.pdf", width = 10, height = 8.27, bg = "transparent")
 # ggsave("SMP_prok_PCoA_WithSurroundings.pdf", width = 10, height = 8.27, bg = "transparent")
 
@@ -338,10 +338,8 @@ euk.nmds
 
 
 plot_ordination(euk.a, euk.nmds, shape = "Country",
-                # label = "Site",
-                color = "Habitat", title = NULL) +
-  stat_ellipse(aes(group = Habitat), type = "norm", linetype = 2, size = 0.2) +
-  # geom_point() +
+                color = "Site", title = NULL) +
+  stat_ellipse(aes(group = Country), type = "norm", linetype = 2, size = 0.2) +
   # scale_colour_manual(values = gradCol) +
   coord_fixed(ratio = 1) +
   theme(legend.position = "top", legend.direction = "horizontal",
@@ -350,10 +348,10 @@ plot_ordination(euk.a, euk.nmds, shape = "Country",
   guides(fill = guide_legend(nrow = 3, byrow = TRUE))
 # xlab("PCoA/MDS1 (95 % CI)") +
 # ylab("PCoA/MDS2 (95 % CI)")
-# ggsave("SMP_euk_PCoA.pdf", width = 10, height = 8.27, bg = "transparent")
+ggsave("SMP_euk_PCoA.pdf", width = 10, height = 8.27, bg = "transparent")
 # ggsave("SMP_euk_PCoA_Country.pdf", width = 10, height = 8.27, bg = "transparent")
 # ggsave("SMP_euk_PCoA_18SOnly.pdf", width = 10, height = 8.27, bg = "transparent")
-ggsave("SMP_euk_PCoA_WithSurroundings.pdf", width = 10, height = 8.27, bg = "transparent")
+# ggsave("SMP_euk_PCoA_WithSurroundings.pdf", width = 10, height = 8.27, bg = "transparent")
 
 
 ################################################################################

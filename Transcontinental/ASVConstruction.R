@@ -11,7 +11,7 @@ setwd("/scratch/pSMP/18S_raw_data_2015/FASTQ/")
 
 library("dada2")
 library("ShortRead")
-library("Biostrings")
+# library("Biostrings")
 library("DECIPHER")
 library("gridExtra")
 

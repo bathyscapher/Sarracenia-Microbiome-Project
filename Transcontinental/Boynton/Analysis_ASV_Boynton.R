@@ -3,16 +3,17 @@
 ### SMP ASV Boynton data
 ################################################################################
 
-rm(list = ls())
-
 
 library("phyloseq")
 library("ggplot2")
 theme_set(theme_bw(base_size = 20))
 
 
-# setwd("/scratch/pSMP/Boynton/geo/")
-setwd("/scratch/pSMP/Boynton/temp/")
+rm(list = ls())
+
+
+setwd("/scratch/pSMP/Boynton/geo/")
+# setwd("/scratch/pSMP/Boynton/temp/")
 
 
 ################################################################################
@@ -40,7 +41,8 @@ pbMeta <- read.table("~/Sarracenia-Microbiome-Project/Transcontinental/Boynton/S
                      sep = "\t", header = TRUE)
 
 pbMeta <- sample_data(pbMeta)
-row.names(pbMeta) <- pbMeta$Sample
+row.names(pbMeta) <- pbMeta$ID
+
 
 pb <- merge_phyloseq(pb, pbMeta)
 sample_data(pb)
@@ -50,15 +52,15 @@ sample_variables(pb)
 ################################################################################
 ### Plot overview
 
-plot_bar(pb, x = "Family", fill = "Dataset") +
+plot_bar(pb, x = "Phylum", fill = "Habitat") +
   # facet_wrap( ~ Class, scales = "free", nrow = 1) +
-  geom_bar(aes(color = Dataset, fill = Dataset),
+  geom_bar(aes(color = Habitat, fill = Habitat),
            stat = "identity", position = "stack") +
   theme(legend.position = "top") +
   ylab("Abundance") +
   coord_flip()
 # ggsave("PB_ITS_Geographic_Phyla.pdf", width = 20, height = 20)
-ggsave("PB_ITS_Temporal_Phyla.pdf", width = 20, height = 20)
+# ggsave("PB_ITS_Temporal_Phyla.pdf", width = 20, height = 20)
 
 
 ################################################################################

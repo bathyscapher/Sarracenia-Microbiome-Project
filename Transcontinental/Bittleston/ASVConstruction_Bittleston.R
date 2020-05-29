@@ -14,8 +14,8 @@ library("gridExtra")
 rm(list = ls())
 
 
-# setwd("/scratch/pSMP/16S_raw_data_2015/FASTQ/")
-setwd("/scratch/pSMP/18S_raw_data_2015/FASTQ/")
+setwd("/scratch/pSMP/16S_raw_data_2015/FASTQ/")
+# setwd("/scratch/pSMP/18S_raw_data_2015/FASTQ/")
 
 ncore <- 9 # specify number of available cores
 
@@ -182,7 +182,8 @@ dim(seqtab.nochim)
 sum(seqtab.nochim) / sum(seqtab)
 
 
-saveRDS(seqtab.nochim, "seqtab.nochim_LB.rds")
+# saveRDS(seqtab.nochim, "seqtab.nochim_LB.rds")
+# seqtab.nochim <- readRDS("seqtab.nochim_LB.rds")
 
 
 ### Track reads through the pipeline
@@ -205,7 +206,7 @@ taxa <- assignTaxonomy(seqtab.nochim,
                         multithread = TRUE, verbose = TRUE)
 
 
-saveRDS(taxa, "taxa_EB.rds")
+saveRDS(taxa, "taxa_LB.rds")
 
 
 ### Assign taxonomy with IdTaxa and SILVA
