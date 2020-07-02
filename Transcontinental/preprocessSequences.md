@@ -78,3 +78,7 @@ rename -n 's/_001//' *fastq
 ```bash
 for run in {1..2}; do rename 's/_/-/' *fastq.gz; done
 ```
+
+# ASV construction
+[ASVs](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) were constructed from the raw reads mainly following the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html) and processed with the R package [phyloseq](https://joey711.github.io/phyloseq/index.html).
+ASVs were classified with [SILVA 138](https://www.arb-silva.de/download/arb-files/).
