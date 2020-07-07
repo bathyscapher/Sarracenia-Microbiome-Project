@@ -1,5 +1,6 @@
-# Preprocess sequence files
-## Demultiplex Illumina FASTQ with R1, R2 and I1
+# Workflow
+## Preprocess FASTQ files
+### Demultiplex Illumina FASTQ with R1, R2 and I1
 If necessary (Bittleston), samples were demultiplexed with [mothur](https://mothur.org/):
 
 ```bash
@@ -20,8 +21,27 @@ barcode	ACCCAAGCGTTA	NONE    Sample03
 ...	...	...	...
 ```
 
+### Demultiplex Illumina FASTQ with R1 and R2
+If necessary (Freedman), samples were demultiplexed with [mothur](https://mothur.org/):
 
-## Demultiplex 454 Roche SFF and convert to FASTQ
+```bash
+fastq.info(fastq=Sam55-108_S4_L001_R1_001.fastq, oligos=zf.oligo, bdiffs=1, fasta=f, qfile=f)
+fastq.info(fastq=Sam55-108_S4_L001_R2_001.fastq, oligos=zf.oligo, bdiffs=1, fasta=f, qfile=f)
+
+fastq.info(fastq=Samp1-54_S3_L001_R1_001.fastq, oligos=zf.oligo, bdiffs=1, fasta=f, qfile=f)
+fastq.info(fastq=Samp1-54_S3_L001_R2_001.fastq, oligos=zf.oligo, bdiffs=1, fasta=f, qfile=f)
+```
+
+...with the tab separated oligo file in the format:
+```bash
+barcode	ACTGTTTACTGT	Sample01
+barcode	CAGGCCACTCTC	Sample02
+barcode	ACCCAAGCGTTA	Sample03
+...	...	...	...
+```
+
+
+### Demultiplex 454 Roche SFF and convert to FASTQ
 Demultiplex into SFFs and after, convert to FASTQ with [mothur](https://mothur.org/):
 ```mothur
 sffinfo(sff=temporal.sff, flow=F)
@@ -57,14 +77,24 @@ mv R1_Sro16..fastq.gz R1_Sro162.fastq.gz
 mv R2_Sro16..fastq.gz R2_Sro162.fastq.gz
 ```
 
-## Boynton
+### Boynton
 ```bash
 gzip *fastq
 rename -n 's/temporal.trim.sorted.//' *q.gz
 rename -n 's/geographic.trim.sorted.//' *q.gz
 ```
 
-## Young
+### Freedman
+```bash
+...
+```
+
+### Korn
+```bash
+...
+```
+
+### Young
 ```bash
 rename -n 's/Young16S\d{1,2}_/16S-/' *fastq
 rename -n 's/Young18S\d{1,2}_/18S-/' *fastq
@@ -74,11 +104,11 @@ rename -n 's/_001//' *fastq
 ```
 
 
-## Young Greenhouse
+### Young Greenhouse
 ```bash
 for run in {1..2}; do rename 's/_/-/' *fastq.gz; done
 ```
 
-# ASV construction
+## ASV construction
 [ASVs](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) were constructed from the raw reads mainly following the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html) and processed with the R package [phyloseq](https://joey711.github.io/phyloseq/index.html).
 ASVs were classified with [SILVA 138](https://www.arb-silva.de/download/arb-files/).
