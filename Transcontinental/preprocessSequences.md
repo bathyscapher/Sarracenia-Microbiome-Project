@@ -7,6 +7,7 @@ fastq.info(file=lb.file, oligos=lb_16S_ext.oligo, bdiffs=1, fasta=t, qfile=t)
 fastq.info(file=lb.file, oligos=lb_18S_ext_rc.oligo, bdiffs=1, fasta=t, qfile=t)
 ```
 
+
 ...where lb.file holds the tab separated names of R1, R2 and I1 filenames (`none` specifies the missing reverse index I2 file):
 ```bash
 *R1*.fastq *R2_001*.fastq *I1*.fastq none
@@ -20,9 +21,28 @@ barcode	ACCCAAGCGTTA	NONE    Sample03
 ...	...	...	...
 ```
 
+## Demultiplex Illumina FASTQ with R1 and R2
+If necessary (Freedman), samples were demultiplexed with [mothur](https://mothur.org/):
+
+```bash
+fastq.info(fastq=Sam55-108_S4_L001_R1_001.fastq, oligos=zf.oligo, bdiffs=1, fasta=f, qfile=f)
+fastq.info(fastq=Sam55-108_S4_L001_R2_001.fastq, oligos=zf.oligo, bdiffs=1, fasta=f, qfile=f)
+
+fastq.info(fastq=Samp1-54_S3_L001_R1_001.fastq, oligos=zf.oligo, bdiffs=1, fasta=f, qfile=f)
+fastq.info(fastq=Samp1-54_S3_L001_R2_001.fastq, oligos=zf.oligo, bdiffs=1, fasta=f, qfile=f)
+```
+
+...with the tab separated oligo file in the format:
+```bash
+barcode	ACTGTTTACTGT	Sample01
+barcode	CAGGCCACTCTC	Sample02
+barcode	ACCCAAGCGTTA	Sample03
+...	...	...	...
+```
+
 
 ## Demultiplex 454 Roche SFF and convert to FASTQ
-Demultiplex into SFFs and after, convert to FASTQ with [mothur](https://mothur.org/):
+If necessary (Boynton), SFFs  were demultiplexed and afterwards converted to FASTQ with [mothur](https://mothur.org/):
 ```mothur
 sffinfo(sff=temporal.sff, flow=F)
 trim.seqs(fasta=temporal.fasta, qfile=temporal.qual, oligos=temporal.oligo, bdiffs=1)

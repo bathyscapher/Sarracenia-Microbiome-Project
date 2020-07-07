@@ -32,7 +32,8 @@ wd <- c("/scratch/pSMP/16S_raw_data_2015/FASTQ/",
         "/scratch/pSMP/Young/euk/",
         "/scratch/pSMP/Young_Greenhouse/")
 
-ps.l <- c("eb.p", "eb.e", "pb.g", "pb.t", "rk.p", "rk.e", "ey.p", "ey.e", "ey.g")
+ps.l <- c("eb.p", "eb.e", "pb.g", "pb.t", "rk.p", "rk.e", "ey.p", "ey.e",
+          "ey.g")
 
 
 # i <- 5
