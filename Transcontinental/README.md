@@ -102,7 +102,8 @@ rename -n 's/-fastq/.fastq/' *q.gz
 
 ### Korn
 ```bash
-...
+rename 's/MI.M03\d{3}[.|_]?0\d{3}.001.FLD0\d{3}.//' *fastq.gz
+for run in {1..3}; do rename 's/_//' *fastq.gz; done
 ```
 
 ### Young
