@@ -89,9 +89,12 @@ rename -n 's/geographic.trim.sorted.//' *q.gz
 gzip *fastq
 
 ## For Samp1*
-rename -n 's/Samp1-54_S3_L001_//' *q.gz
+#rename -n 's/Samp1-54_S3_L001_//' *q.gz
 ## For Sam55*
-rename -n 's/Sam55-108_S4_L001_//' *q.gz
+#rename -n 's/Sam55-108_S4_L001_//' *q.gz
+
+## For both
+rename -n 's/{Samp1-54_S3|Sam55-108_S4}_L001_//' *q.gz
 
 rename -n 's/001.//' *q.gz
 
