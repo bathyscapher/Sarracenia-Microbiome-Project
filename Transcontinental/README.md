@@ -4,8 +4,8 @@
 If necessary (Bittleston), samples were demultiplexed with [mothur](https://mothur.org/):
 
 ```bash
-fastq.info(file=lb.file, oligos=lb_16S_ext.oligo, bdiffs=1, fasta=t, qfile=t)
-fastq.info(file=lb.file, oligos=lb_18S_ext_rc.oligo, bdiffs=1, fasta=t, qfile=t)
+fastq.info(file=lb.file, oligos=lb_16S_ext.oligo, bdiffs=1, fasta=f, qfile=f)
+fastq.info(file=lb.file, oligos=lb_18S_ext_rc.oligo, bdiffs=1, fasta=f, qfile=f)
 ```
 
 ...where lb.file holds the tab separated names of R1, R2 and I1 (`none` specifies the missing reverse index I2 file):
@@ -17,7 +17,7 @@ fastq.info(file=lb.file, oligos=lb_18S_ext_rc.oligo, bdiffs=1, fasta=t, qfile=t)
 ```bash
 barcode	ACTGTTTACTGT	NONE	Sample01
 barcode	CAGGCCACTCTC	NONE	Sample02
-barcode	ACCCAAGCGTTA	NONE    Sample03
+barcode	ACCCAAGCGTTA	NONE	Sample03
 ...	...	...	...
 ```
 
@@ -25,8 +25,8 @@ barcode	ACCCAAGCGTTA	NONE    Sample03
 If necessary (Freedman), samples were demultiplexed with [mothur](https://mothur.org/):
 
 ```bash
-fastq.info(file=zf.Samp1.file, oligos=zf.oligo, bdiffs=1, fasta=t, qfile=t)
-fastq.info(file=zf.Sam55.file, oligos=zf.oligo, bdiffs=1, fasta=t, qfile=t)
+fastq.info(file=zf.Samp1.file, oligos=zf.oligo, bdiffs=1, fasta=f, qfile=f)
+fastq.info(file=zf.Sam55.file, oligos=zf.oligo, bdiffs=1, fasta=f, qfile=f)
 ```
 
 ...where zf.\*.file holds the tab separated names of R1 and R2 (`none none` specifies the missing index files):
