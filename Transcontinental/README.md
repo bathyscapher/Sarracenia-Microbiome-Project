@@ -25,11 +25,13 @@ barcode	ACCCAAGCGTTA	NONE    Sample03
 If necessary (Freedman), samples were demultiplexed with [mothur](https://mothur.org/):
 
 ```bash
-fastq.info(fastq=Sam55-108_S4_L001_R1_001.fastq, oligos=zf.oligo, bdiffs=1, fasta=f, qfile=f)
-fastq.info(fastq=Sam55-108_S4_L001_R2_001.fastq, oligos=zf.oligo, bdiffs=1, fasta=f, qfile=f)
+fastq.info(file=zf.Samp1.file, oligos=zf.oligo, bdiffs=1, fasta=t, qfile=t)
+fastq.info(file=zf.Sam55.file, oligos=zf.oligo, bdiffs=1, fasta=t, qfile=t)
+```
 
-fastq.info(fastq=Samp1-54_S3_L001_R1_001.fastq, oligos=zf.oligo, bdiffs=1, fasta=f, qfile=f)
-fastq.info(fastq=Samp1-54_S3_L001_R2_001.fastq, oligos=zf.oligo, bdiffs=1, fasta=f, qfile=f)
+...where zf.\*.file holds the tab separated names of R1 and R2 filenames (`none none` specifies the missing index files):
+```bash
+*R1*.fastq *R2_001*.fastq *I1*.fastq none
 ```
 
 ...with the tab separated oligo file in the format:
