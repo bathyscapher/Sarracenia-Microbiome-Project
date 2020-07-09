@@ -8,7 +8,7 @@ fastq.info(file=lb.file, oligos=lb_16S_ext.oligo, bdiffs=1, fasta=t, qfile=t)
 fastq.info(file=lb.file, oligos=lb_18S_ext_rc.oligo, bdiffs=1, fasta=t, qfile=t)
 ```
 
-...where lb.file holds the tab separated names of R1, R2 and I1 filenames (`none` specifies the missing reverse index I2 file):
+...where lb.file holds the tab separated names of R1, R2 and I1 (`none` specifies the missing reverse index I2 file):
 ```bash
 *R1*.fastq *R2_001*.fastq *I1*.fastq none
 ```
@@ -21,7 +21,7 @@ barcode	ACCCAAGCGTTA	NONE    Sample03
 ...	...	...	...
 ```
 
-### Demultiplex Illumina FASTQ with R1 and R2
+### Demultiplex Illumina FASTQ with R1 and R2 (without index files I1 or I2)
 If necessary (Freedman), samples were demultiplexed with [mothur](https://mothur.org/):
 
 ```bash
@@ -29,16 +29,16 @@ fastq.info(file=zf.Samp1.file, oligos=zf.oligo, bdiffs=1, fasta=t, qfile=t)
 fastq.info(file=zf.Sam55.file, oligos=zf.oligo, bdiffs=1, fasta=t, qfile=t)
 ```
 
-...where zf.\*.file holds the tab separated names of R1 and R2 filenames (`none none` specifies the missing index files):
+...where zf.\*.file holds the tab separated names of R1 and R2 (`none none` specifies the missing index files):
 ```bash
-*R1*.fastq *R2_001*.fastq *I1*.fastq none
+*R1*.fastq *R2_001*.fastq none none
 ```
 
 ...with the tab separated oligo file in the format:
 ```bash
-barcode	ACTGTTTACTGT	Sample01
-barcode	CAGGCCACTCTC	Sample02
-barcode	ACCCAAGCGTTA	Sample03
+barcode	ACTGTTTACTGT	NONE	Sample01
+barcode	CAGGCCACTCTC	NONE	Sample02
+barcode	ACCCAAGCGTTA	NONE    Sample03
 ...	...	...	...
 ```
 
