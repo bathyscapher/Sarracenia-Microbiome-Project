@@ -88,11 +88,12 @@ rename -n 's/geographic.trim.sorted.//' *q.gz
 ```bash
 gzip *fastq
 
+## For Samp1*
 rename -n 's/Samp1-54_S3_L001_//' *q.gz
-rename -n 's/001.//' *q.gz
+## For Sam55*
+rename -n 's/Sam55-108_S4_L001_//' *q.gz
 
-#rename -n 's/Samp1-54_S3_L001_//' *q.gz
-#rename -n 's/001.//' *q.gz
+rename -n 's/001.//' *q.gz
 
 rename -n 's/\.(?=[^.]*\.)/-/g' '{}' *q.gz # replace dots with dashes, skip file extension
 rename -n 's/-fastq/.fastq/' *q.gz
