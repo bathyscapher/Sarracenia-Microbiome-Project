@@ -22,6 +22,7 @@ barcode	ACCCAAGCGTTA	NONE	Sample03
 ```
 
 ### Demultiplex Illumina FASTQ with R1 and R2 (without index files I1 or I2)
+**FIX THIS**:
 If necessary (Freedman), samples were demultiplexed with [mothur](https://mothur.org/):
 
 ```bash
