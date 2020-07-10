@@ -13,10 +13,10 @@ library("gridExtra")
 rm(list = ls())
 
 
-# setwd("/scratch/pSMP/Freedman/Samp55/")
+# setwd("/scratch/pSMP/Freedman/Sam55/")
 setwd("/scratch/pSMP/Freedman/Samp1/")
 
-ncore <- 9 # specify number of available cores
+ncore <- 8 # specify number of available cores
 
 
 ################################################################################
@@ -28,7 +28,8 @@ rR <- sort(list.files(pattern = "R2", full.names = TRUE))
 
 
 ## Extract sample names
-sample.names <- sapply(strsplit(basename(rF), "_"), `[`, 1)
+sample.names <- gsub(".fastq.gz", "",
+                     sapply(strsplit(basename(rF), "_"), `[`, 2))
 
 
 ### Check for primers
@@ -36,15 +37,12 @@ sample.names <- sapply(strsplit(basename(rF), "_"), `[`, 1)
 rF.fN <- file.path("filtN", basename(rF))
 rR.fN <- file.path("filtN", basename(rR))
 
-filterAndTrim(rF, rF.fN, rR, rR.fN, maxN = 0, multithread = TRUE)
+filterAndTrim(rF, rF.fN, rR, rR.fN, maxN = 0, multithread = FALSE, matchIDs=F)
 
 
-## Forward and reverse primer (choose either 16S or 18S)
-FWD <- "" #
-REV <- "" #
-
-# FWD <- "" #
-# REV <- "" #
+## Forward and reverse primer
+FWD <- "AACMGGATTAGATACCCKG" # 799F
+REV <- "ACGTCRTCCMCACCTTCCTC" # 1194R
 
 
 ## Compile all orientations of the primers
@@ -72,7 +70,8 @@ cutadapt <- "/usr/bin/cutadapt"
 
 
 path.cut <- file.path(".", "cutPrimers")
-if(!dir.exists(path.cut)) dir.create(path.cut)
+if(!dir.exists(path.cut))
+  {dir.create(path.cut)}
 rF.cut <- file.path(path.cut, basename(rF.fN))
 rR.cut <- file.path(path.cut, basename(rR.fN))
 
@@ -106,20 +105,26 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = rF.cut[[reads]]),
       REV.ReverseReads = sapply(REV.orients, primerHits, fn = rR.cut[[reads]]))
 
 
-### Filter and trim. Place filtered files in filtered/ subdirectory
-## 16S
-rF.cut.f <- file.path("filtered", paste0(sample.names, "_16S_R1_filt.fastq.gz"))
-rR.cut.f <- file.path("filtered", paste0(sample.names, "_16S_R2_filt.fastq.gz"))
+### Quality filtering
+## Update sample names as some samples were filtered empty
+rF.fN <- sort(list.files(path = "filtN", pattern = "R1", full.names = TRUE))
+rR.fN <- sort(list.files(path = "filtN", pattern = "R2", full.names = TRUE))
 
-## 18S
-# rF.cut.f <- file.path("filtered", paste0(sample.names, "_18S_R1_filt.fastq.gz"))
-# rR.cut.f <- file.path("filtered", paste0(sample.names, "_18S_R2_filt.fastq.gz"))
+
+## Extract sample names
+sample.names <- gsub(".fastq.gz", "",
+                     sapply(strsplit(basename(rF.fN), "_"), `[`, 2))
+
+
+## Filter and trim. Place filtered files in filtered/ subdirectory
+rF.cut.f <- file.path("filtered", paste0(sample.names, "_R1_filt.fastq.gz"))
+rR.cut.f <- file.path("filtered", paste0(sample.names, "_R2_filt.fastq.gz"))
+
 
 names(rF.cut.f) <- sample.names
 names(rR.cut.f) <- sample.names
 
 
-### Quality filtering
 out <- filterAndTrim(rF.fN, rF.cut.f, rR.fN, rR.cut.f,
                      maxN = 0, maxEE = c(2, 2), minLen = 100,
                      truncQ = 2, rm.phix = TRUE,

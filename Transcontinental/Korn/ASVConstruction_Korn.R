@@ -12,8 +12,8 @@ library("gridExtra")
 
 rm(list = ls())
 
-# setwd("/scratch/pSMP/Korn/SMP_16S_reseq/")
-setwd("/scratch/pSMP/Korn/SMP_18S_reseq/")
+setwd("/scratch/pSMP/Korn/SMP_16S_reseq/")
+# setwd("/scratch/pSMP/Korn/SMP_18S_reseq/")
 
 
 ncore <- 9 # specify number of available cores
@@ -40,11 +40,11 @@ filterAndTrim(rF, rF.fN, rR, rR.fN, maxN = 0, multithread = TRUE)
 
 
 ## Forward and reverse primer (choose either 16S or 18S)
-# FWD <- "GTGYCAGCMGCCGCGGTAA" # 515FB
-# REV <- "GGACTACNVGGGTWTCTAAT" # 806RB
+FWD <- "GTGYCAGCMGCCGCGGTAA" # 515FB
+REV <- "GGACTACNVGGGTWTCTAAT" # 806RB
 
-FWD <- "CGGTAAYTCCAGCTCYV" # 574*_f
-REV <- "CCGTCAATTHCTTYAART" # 1132r
+# FWD <- "CGGTAAYTCCAGCTCYV" # 574*_f
+# REV <- "CCGTCAATTHCTTYAART" # 1132r
 
 
 ## Compile all orientations of the primers
@@ -72,7 +72,8 @@ cutadapt <- "/usr/bin/cutadapt"
 
 
 path.cut <- file.path(".", "cutPrimers")
-if(!dir.exists(path.cut)) dir.create(path.cut)
+if(!dir.exists(path.cut))
+  {dir.create(path.cut)}
 rF.cut <- file.path(path.cut, basename(rF.fN))
 rR.cut <- file.path(path.cut, basename(rR.fN))
 
@@ -108,12 +109,13 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = rF.cut[[reads]]),
 
 ### Filter and trim. Place filtered files in filtered/ subdirectory
 ## 16S
-# rF.cut.f <- file.path("filtered", paste0(sample.names, "_16S_R1_filt.fastq.gz"))
-# rR.cut.f <- file.path("filtered", paste0(sample.names, "_16S_R2_filt.fastq.gz"))
+rF.cut.f <- file.path("filtered", paste0(sample.names, "_16S_R1_filt.fastq.gz"))
+rR.cut.f <- file.path("filtered", paste0(sample.names, "_16S_R2_filt.fastq.gz"))
 
 ## 18S
-rF.cut.f <- file.path("filtered", paste0(sample.names, "_18S_R1_filt.fastq.gz"))
-rR.cut.f <- file.path("filtered", paste0(sample.names, "_18S_R2_filt.fastq.gz"))
+# rF.cut.f <- file.path("filtered", paste0(sample.names, "_18S_R1_filt.fastq.gz"))
+# rR.cut.f <- file.path("filtered", paste0(sample.names, "_18S_R2_filt.fastq.gz"))
+
 
 names(rF.cut.f) <- sample.names
 names(rR.cut.f) <- sample.names
@@ -159,11 +161,11 @@ saveRDS(dadaR, "dadaR_RK.rds")
 
 ### Merge paired reads for 16S, concatenate them for 18S
 ## 16S
-# contigs <- mergePairs(dadaF, rF.cut.f, dadaR, rR.cut.f, verbose = TRUE)
+contigs <- mergePairs(dadaF, rF.cut.f, dadaR, rR.cut.f, verbose = TRUE)
 
 ## 18S
-contigs <- mergePairs(dadaF, rF.cut.f, dadaR, rR.cut.f, verbose = TRUE,
-                      justConcatenate = TRUE)
+# contigs <- mergePairs(dadaF, rF.cut.f, dadaR, rR.cut.f, verbose = TRUE,
+#                       justConcatenate = TRUE)
 head(contigs[[1]])
 
 
@@ -186,9 +188,8 @@ dim(seqtab.nochim)
 sum(seqtab.nochim) / sum(seqtab)
 
 
-# saveRDS(seqtab.nochim, "seqtab.nochim_RK.rds")
+saveRDS(seqtab.nochim, "seqtab.nochim_RK.rds")
 # seqtab.nochim <- readRDS("seqtab.nochim_RK.rds")
-
 
 
 ### Track reads through the pipeline
