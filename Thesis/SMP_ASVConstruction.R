@@ -5,6 +5,7 @@
 ### SMP 16S ASV
 ### Author: korn@cumulonimbus.at University of Fribourg 2019
 ### dada2 tutorial: https://benjjneb.github.io/dada2/tutorial.html
+### Download reference files: https://benjjneb.github.io/dada2/training.html
 ################################################################################
 
 
@@ -20,7 +21,7 @@ library("gridExtra")
 rm(list = ls())
 
 
-setwd("~/S")
+setwd("~/Sarracenia-Microbiome-Project/Thesis")
 
 
 ## Set number of cores
@@ -196,7 +197,7 @@ head(contigs[[1]])
 # saveRDS(contigs, "contigs_SMP16S.rds")
 # contigs <- readRDS("contigs_SMP16S.rds")
 
-saveRDS(contigs, "contigs_SMP18S.rds")
+# saveRDS(contigs, "contigs_SMP18S.rds")
 # contigs <- readRDS("contigs_SMP18S.rds")
 
 
@@ -239,7 +240,6 @@ dna <- DNAStringSet(getSequences(seqtab.nochim))
 
 ## Load training data
 load("SILVA_SSU_r138_2019.RData")
-# load("~/Seafile/dada2/SILVA_SSU_r138_2019.RData")
 
 
 ids <- IdTaxa(dna, trainingSet, strand = "top", processors = ncore,
@@ -259,7 +259,7 @@ rownames(taxid) <- getSequences(seqtab.nochim)
 
 
 # saveRDS(taxid, "taxid_SMP16S.rds")
-saveRDS(taxid, "taxid_SMP18S.rds")
+# saveRDS(taxid, "taxid_SMP18S.rds")
 
 
 ################################################################################
