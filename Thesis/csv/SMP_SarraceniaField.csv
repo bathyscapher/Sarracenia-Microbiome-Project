@@ -1,0 +1,16 @@
+Site;SiteName;Country;Canton;Municipiality;CoordinateE;CoordinateN;Altitude;Habitat;Sampled_2017;Sampled_2018;Clumps;January;Feburary;March;April;May;June;July;August;September;October;November;December;MeteoSwissStation;MeteoSwissStationShort
+GR;† GR - Etang de la Gruère;CH;JU;Saignelégier;7.05645;47.24131;1006;;Yes;No;0;;;;;;;;;;;;;;
+CB;CB - Champ-Buet;CH;VD;Bournens;6.57847621058883;46.6126154594919;605;Fen;Yes;Yes;20;-0.6;0.9;4.3;7.9;11.9;15.4;17.5;16.9;14.1;9.3;4.2;5;Cossonay;COS
+Frasne;Frasne;F;;;6.173644;46.82655;834;;No;No;1;;;;;;;;;;;;;;
+HB;HB - Harzisbode;CH;BE;Habkern;7.95263;46.79266;1101;;Yes;No;0;;;;;;;;;;;;;;
+LC;LC - Les Saignoles;CH;NE;Le Locle;6.764286;47.088128;1257;;No;No;2;;;;;;;;;;;;;;
+LE;LE - Les Embreux;CH;JU;Les Gevenez;7.11572133320043;47.2625172509751;1022;Raised peat bog;Yes;Yes;8;-2.4;-1.6;1.6;4.9;9.1;12.5;14.6;14.1;11.5;7;2;-1.2;Bellelay;BEY
+LM;LM - Les Mosses;CH;VD;Ormont-Dessous;7.10030346114215;46.3964800387024;1443;Raised peat bog;Yes;Yes;12;-4.1;-3.3;-0.2;3.1;7.3;10.8;13;12.5;10.1;5.7;0.6;-2.6;Col des Mosses;CDM
+LS;LS - La Sagne;CH;BE;Saicourt;7.17223681166144;47.2550825760847;793;;Yes;No;2;-2;-1.1;2.1;5.5;9.5;12.9;15.1;14.7;12;7.5;2.4;-0.8;;
+LT;LT - Les Tenasses;CH;VD;Saint-Légier-La Chiésaz;6.92099301776153;46.4913278261721;1239;Raised peat bog;Yes;Yes;25000;-3.4;-2.4;0.8;4.2;8.4;11.8;14.1;13.4;10.9;6.4;1.4;-2;Les Avants;AVA
+LV;LV - Les Veaux;CH;JU;Les Gevenez;7.093384;47.2409488000405;1019;Raised peat bog;Yes;Yes;30;-2.5;-1.6;1.6;4.9;9;12.3;14.5;14.1;11.5;7.1;2;-1.2;Courtelary;COY
+MA;MA - Les Ponts-de-Martel;CH;NE;Les Ponts-de-Martel;6.736717;46.996364;1003;;No;No;2;;;;;;;;;;;;;;
+RW;RW - Rütiwald;CH;ZH;Rüti;8.833297;47.253904;483;;Yes;No;0;;;;;;;;;;;;;;
+SB;SB - Scherb;CH;SG;Ebnat-Kappel;9.16733585397696;47.2772266882708;1106;Raised peat bog;Yes;No;2;-2.5;-1.6;1.6;4.9;9.3;12.6;14.8;14.3;11.7;7.3;2.1;-1.2;;
+SI;SI - Les Pontins;CH;BE;Saint-Imier;6.98797;47.127703;1096;;No;No;NA;;;;;;;;;;;;;;
+VZ;VZ - Mouille de la Vraconnaz;CH;VD;Sainte-Croix;6.467023;46.841835;1088;;No;No;NA;;;;;;;;;;;;;;
