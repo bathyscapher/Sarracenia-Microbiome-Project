@@ -22,8 +22,7 @@ gradCol <- c("#D55E00", "#E69F00", "#F0E442", "#009E73", "#56B4E9")
 
 
 ################################################################################
-
-readTaxa <- function (method = c("ASV", "OTU"), primer = c("16S", "18S"),
+readTaxa <- function (primer = c("16S", "18S"),
                       mosses = c("with", "without", "only"),
                       merge.mosses = c(TRUE, FALSE), glom = c(TRUE, FALSE)) {
 
@@ -36,7 +35,7 @@ readTaxa <- function (method = c("ASV", "OTU"), primer = c("16S", "18S"),
 
     ## Leaf samples
     leaves <- read.table("csv/SMP_LeafSamples_2018.csv",
-                         header = TRUE, sep = "\t", fill = FALSE)
+                         header = TRUE, sep = ",", fill = FALSE)
 
     leaves$SampleColor <- ordered(leaves$SampleColor,
                                   levels = c("clear", "cloudy", "green", "red",
@@ -53,7 +52,7 @@ readTaxa <- function (method = c("ASV", "OTU"), primer = c("16S", "18S"),
 
 
     ## Leaf morphometry
-    morph <- read.table("SMP_LeafMorphometrics_2018.csv",
+    morph <- read.table("csv/SMP_LeafMorphometrics_2018.csv",
                         header = TRUE, sep = "\t", fill = FALSE)
 
 
@@ -91,8 +90,7 @@ readTaxa <- function (method = c("ASV", "OTU"), primer = c("16S", "18S"),
 
 
     ## Temperature from data logger
-    logger <- read.table(paste(smpDir, "csv/SMP_allLoggersDateTrimmed.csv",
-                               sep = "/"),
+    logger <- read.table("csv/SMP_allLoggersDateTrimmed.csv",
                          header = TRUE, sep = ";", check.names = TRUE)
 
     options(digits.secs = 0)
@@ -101,7 +99,7 @@ readTaxa <- function (method = c("ASV", "OTU"), primer = c("16S", "18S"),
 
 
     ## Complete leaf morphology
-    leaves.up <- merge(leaves, morph[, c(3, 9:13)], # full morphometrics
+    leaves.up <- merge(leaves, morph[, c(3, 9:13)],
                        by.x = 'FullIDOld', by.y = 'FullIDOld')
 
 
@@ -141,8 +139,8 @@ readTaxa <- function (method = c("ASV", "OTU"), primer = c("16S", "18S"),
     mosses.leaves.ctr <- rbind(controls[, c(1:2, 5:7, 9:10, 27:36)],
                                mosses.leaves)
 
-    smpMeta <- merge(mosses.leaves.ctr, temp.mu, by = "Site", all.x = TRUE)
 
+    smpMeta <- merge(mosses.leaves.ctr, temp.mu, by = "Site", all.x = TRUE)
     smpMeta$PlantID <- paste(smpMeta$Site, smpMeta$SectorPlant, sep = "-")
     smpMeta <- merge(smpMeta, distance, by = "PlantID", all.x = TRUE)
 
@@ -173,38 +171,34 @@ readTaxa <- function (method = c("ASV", "OTU"), primer = c("16S", "18S"),
     smpMeta$Succession <- as.factor(smpMeta$Succession)
 
 
-    ## Remove spacers in sample namses
+    ## Remove spacers in sample names
     smpMeta$FullID <- gsub("[-|_]", "", smpMeta$FullID)
 
 
     ## Prey items
-    prey <- read.table("csv/SMP_Prey_clean.csv", sep = "\t", row.names = 1,
-                       header = TRUE)
+    prey <- read.table("csv/SMP_Prey_clean.csv", sep = "\t", header = TRUE)
 
 
-    prey.items <- data.frame(rowSums(prey))
-    colnames(prey.items) <- "prey.items"
-    prey.items$FullID <- rownames(prey.items)
+    prey$prey.items <- rowSums(prey[, -c(12, 20)])
+    prey
 
 
-    smpMeta <- merge(smpMeta, prey.items, by = "FullID", all = TRUE)
+    smpMeta <- merge(smpMeta, prey[, c(12, 21)], by = "FullID", all = TRUE)
 
 
     ## Duplicate first all moss samples, then all samples and add a resequenced
     ##  tag ("r") to the end of the sample names
-    if(method == "ASV")
-    {
-      moss <- smpMeta[smpMeta$Succession == "M", ]
-      moss$FullID <- gsub("M$", "Q", moss$FullID)
+    moss <- smpMeta[smpMeta$Succession == "M", ]
+    moss$FullID <- gsub("M$", "Q", moss$FullID)
 
-      smpMeta <- rbind(smpMeta, moss)
+    smpMeta <- rbind(smpMeta, moss)
 
 
-      smpMeta.r <- smpMeta
-      smpMeta.r$FullID <- gsub("$", "r", smpMeta.r$FullID)
+    smpMeta.r <- smpMeta
+    smpMeta.r$FullID <- gsub("$", "r", smpMeta.r$FullID)
 
-      smpMeta <- rbind(smpMeta, smpMeta.r)
-    }
+    smpMeta <- rbind(smpMeta, smpMeta.r)
+
 
     ## Rename succession
     if (primer == "16S")
@@ -234,78 +228,41 @@ readTaxa <- function (method = c("ASV", "OTU"), primer = c("16S", "18S"),
 
 
   ##############################################################################
-  ### Read taxa
-  ### OTU
-  if (method == "OTU")
+  ### Read taxa (ASV)
+  setwd(asvDir)
+
+  if (primer == "16S")
   {
-    # setwd(otuDir)
-    #
-    # if (primer == "16S")
-    # {
-    #   smp <- import_mothur(mothur_shared_file = paste(otuDir,
-    #                                                   "SMP_16S_reseq/filtered/smpp.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.opti_mcc.shared",
-    #                                                   sep = "/"),
-    #                        mothur_constaxonomy_file = paste(otuDir,
-    #                                                         "SMP_16S_reseq/filtered/smpp.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.opti_mcc.0.03.cons.taxonomy",
-    #                                                         sep = "/"),
-    #                        parseFunction = parse_taxonomy_default)
-    # }
-    # if (primer == "18S")
-    # {
-    #   smp <- import_mothur(mothur_shared_file = paste(otuDir,
-    #                                                   "SMP_18S_reseq/filtered/smpe.filter.cat.unique.good.filter.unique.precluster.pick.pick.opti_mcc.shared",
-    #                                                   sep = "/"),
-    #                        mothur_constaxonomy_file = paste(otuDir,
-    #                                                         "SMP_18S_reseq/filtered/smpe.filter.cat.unique.good.filter.unique.precluster.pick.pick.opti_mcc.0.03.cons.taxonomy",
-    #                                                         sep = "/"),
-    #                        parseFunction = parse_taxonomy_default)
-    # }
-    #
-    # ## Rename taxonomic ranks
-    # colnames(tax_table(smp)) <- c("Domain", "Phylum", "Class", "Order",
-    #                               "Family", "Genus")
+    seqtab.nochim <- readRDS(paste(asvDir,
+                                   "SMP_16S_reseq/seqtab.nochim_SMP16S.rds",
+                                   sep = "/"))
+    taxaid <- readRDS(paste(asvDir,
+                            "SMP_16S_reseq/taxa_SMP16S.rds",
+                            sep = "/"))
+    # taxaid <- readRDS("taxid_SMP16S.rds")
+  }
+  if (primer == "18S")
+  {
+    seqtab.nochim <- readRDS(paste(asvDir,
+                                   "SMP_18S_reseq/seqtab.nochim_SMP18S.rds",
+                                   sep = "/"))
+    taxaid <- readRDS("SMP_18S_reseq/taxa_SMP18S.rds")
+    # taxaid <- readRDS("taxid_SMP18S.rds")
   }
 
-
-  ##############################################################################
-  ### ASV
-  if (method == "ASV")
-  {
-    setwd(asvDir)
-    if (primer == "16S")
-    {
-      seqtab.nochim <- readRDS(paste(asvDir,
-                                     "SMP_16S_reseq/seqtab.nochim_SMP16S.rds",
-                                     sep = "/"))
-      taxaid <- readRDS(paste(asvDir,
-                              "SMP_16S_reseq/taxa_SMP16S.rds",
-                              sep = "/"))
-      # taxaid <- readRDS("taxid_SMP16S.rds")
-    }
-    if (primer == "18S")
-    {
-
-      seqtab.nochim <- readRDS(paste(asvDir,
-                                     "SMP_18S_reseq/seqtab.nochim_SMP18S.rds",
-                                     sep = "/"))
-      taxaid <- readRDS("SMP_18S_reseq/taxa_SMP18S.rds")
-      # taxaid <- readRDS("taxid_SMP18S.rds")
-    }
-
-    smp <- phyloseq(otu_table(seqtab.nochim, taxa_are_rows = FALSE),
-                    tax_table(taxaid))
+  smp <- phyloseq(otu_table(seqtab.nochim, taxa_are_rows = FALSE),
+                  tax_table(taxaid))
 
 
-    dna <- Biostrings::DNAStringSet(taxa_names(smp))
-    names(dna) <- taxa_names(smp)
-    smp <- merge_phyloseq(smp, dna)
-    taxa_names(smp) <- paste0("ASV", seq(ntaxa(smp)))
+  dna <- Biostrings::DNAStringSet(taxa_names(smp))
+  names(dna) <- taxa_names(smp)
+  smp <- merge_phyloseq(smp, dna)
+  taxa_names(smp) <- paste0("ASV", seq(ntaxa(smp)))
 
 
-    ### Rename taxonomic ranks
-    colnames(tax_table(smp)) <- c("Domain", "Phylum", "Class", "Order",
-                                  "Family", "Genus")
-  }
+  ### Rename taxonomic ranks
+  colnames(tax_table(smp)) <- c("Domain", "Phylum", "Class", "Order",
+                                "Family", "Genus")
 
 
   ##############################################################################
@@ -322,14 +279,11 @@ readTaxa <- function (method = c("ASV", "OTU"), primer = c("16S", "18S"),
 
 
   ### Merge resequenced samples (for ASV only)
-  if (method == "ASV")
-  {
-    sample_data(smp)$FullID <- gsub("r", "", sample_data(smp)$FullID)
-    smp <- merge_samples(smp, "FullID")
+  sample_data(smp)$FullID <- gsub("r", "", sample_data(smp)$FullID)
+  smp <- merge_samples(smp, "FullID")
 
 
-    sample_data(smp) <- smpMeta
-  }
+  sample_data(smp) <- smpMeta
 
 
   ############################################################################
@@ -488,9 +442,9 @@ readTaxa <- function (method = c("ASV", "OTU"), primer = c("16S", "18S"),
   ############################################################################
   ### Abundance filtering
   if(mosses == "without"){
-  ifelse(method == "OTU", threshold <- 0.0001, threshold <- 0.00001)
+  # ifelse(method == "OTU", threshold <- 0.0001, threshold <- 0.00001)
 
-  smp.a <- filter_taxa(smp.r, function(otu) {mean(otu) > threshold},
+  smp.a <- filter_taxa(smp.r, function(otu) {mean(otu) > 0.00001},
                        prune = TRUE)
   }
   # smp.a
@@ -504,17 +458,17 @@ readTaxa <- function (method = c("ASV", "OTU"), primer = c("16S", "18S"),
 
 
     ## Filter pitcher samples
-    ifelse(method == "OTU", threshold <- 0.0001, threshold <- 0.00001)
+    # ifelse(method == "OTU", threshold <- 0.0001, threshold <- 0.00001)
 
     smp.a.pitch <- filter_taxa(smp.r.pitch,
-                               function(otu) {mean(otu) > threshold},
+                               function(otu) {mean(otu) > 0.00001},
                                prune = TRUE)
 
 
     ## Filter moss samples
-    ifelse(method == "OTU", threshold <- 0.00001, threshold <- 0.000001)
+    # ifelse(method == "OTU", threshold <- 0.00001, threshold <- 0.000001)
 
-    smp.a.moss <- filter_taxa(smp.r.moss, function(otu) {mean(otu) > threshold},
+    smp.a.moss <- filter_taxa(smp.r.moss, function(otu) {mean(otu) > 0.000001},
                               prune = TRUE)
 
     ## Merge them
@@ -645,9 +599,9 @@ readTaxa <- function (method = c("ASV", "OTU"), primer = c("16S", "18S"),
 
 
     ## Abundance filtering
-    ifelse(method == "OTU", threshold <- 0.00001, threshold <- 0.000001)
+    # ifelse(method == "OTU", threshold <- 0.00001, threshold <- 0.000001)
 
-    moss.a <- filter_taxa(moss.r, function(x) {mean(x) > threshold}, TRUE)
+    moss.a <- filter_taxa(moss.r, function(x) {mean(x) > 0.000001}, TRUE)
 
 
     ## Remove empty taxa
