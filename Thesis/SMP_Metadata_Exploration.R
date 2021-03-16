@@ -13,7 +13,6 @@ library("ggplot2")
 library("GGally")
 theme_set(theme_bw(base_size = 20) +
             theme(rect = element_rect(fill = "transparent")))
-# library("vegan")
 library("reshape2")
 
 
@@ -31,15 +30,15 @@ gradCol <- c("#D55E00", "#E69F00", "#F0E442", "#009E73", "#56B4E9")
 
 ################################################################################
 ### Pitcher data
-prok.a <- readRDS("SMP_prok.a.RDS")
-euk.a <- readRDS("SMP_euk.a.RDS")
+prok.a <- readRDS("rds/SMP_prok.a.RDS")
+euk.a <- readRDS("rds/SMP_euk.a.RDS")
 
 
 ################################################################################
 ### Moss taxa
 ## Merged
-moss.prok.a <- readRDS("SMP_moss20.prok.a.RDS")
-moss.euk.a <- readRDS("SMP_moss20.euk.a.RDS")
+moss.prok.a <- readRDS("rds/SMP_moss20.prok.a.RDS")
+moss.euk.a <- readRDS("rds/SMP_moss20.euk.a.RDS")
 # moss <- readRDS("SMP_moss20.RDS")
 
 
