@@ -122,7 +122,7 @@ plot_ordination(smp.moss, smp.moss.nmds, shape = "Site", color = "Succession",
 ################################################################################
 ### Plot taxa
 ## Load pro- and eukaryotic taxa together
-smp <- readRDS("SMP_smp.RDS")
+smp <- readRDS("rds/SMP_smp.RDS")
 
 
 ### Dataframe with taxa and abundances
