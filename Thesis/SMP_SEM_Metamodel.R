@@ -20,7 +20,6 @@ setwd("~/Sarracenia-Microbiome-Project/Thesis")
 set.seed(34706)
 
 
-## Read data
 smpMeta.df <- read.table("csv/SMP_Metadata_SEM_scaled.csv", sep = "\t")
 
 
@@ -295,20 +294,19 @@ newdata2$Site <- ordered(newdata2$Site,
 
 ################################################################################
 ### Run SEM with the two composites
-## With linking composites to moss and prey
-comp <-
-'#mb.moss.prok ~ comp.macro.mp
+comp <- '
+# mb.moss.prok ~ comp.macro.mp
 # mb.moss.euk ~ comp.macro.me
-prey ~ comp.macro.prey + comp.micro.prey
+# prey ~ comp.macro.prey + comp.micro.prey
 
-mb.leaf.prok ~ comp.micro.prok + mb.moss.prok + comp.macro.lp + prey #+ mb.leaf.euk
-mb.leaf.euk ~ comp.micro.euk + mb.moss.euk + comp.macro.le + prey #+ mb.leaf.prok
+mb.leaf.prok ~ comp.micro.prok + mb.moss.prok + comp.macro.lp + prey
+mb.leaf.euk ~ comp.micro.euk + mb.moss.euk + comp.macro.le + prey
 
 mb.leaf.euk ~ mb.leaf.prok
 mb.leaf.prok ~ mb.leaf.euk'
 
 
-fit.comp <- sem(comp, data = smpMeta.df)
+fit.comp <- sem(comp, data = smpMeta.df, estimator = "MLM")
 summary(fit.comp, rsq = TRUE, fit.measures = TRUE)
 
 
@@ -327,62 +325,16 @@ modindices(fit.comp, minimum.value = 3, op = "~")
 
 
 fit.comp.b <- bsem(comp, data = smpMeta.df,
-                        n.chains = 4, burnin = 4000, sample = 14000,
+                        n.chains = 4, #burnin = 2000, sample = 2000,
                         bcontrol = list(cores = 6)#,
                         # control = list(adapt_delta = 0.9)
 )
 summary(fit.comp.b, rsq = TRUE, fit.measures = TRUE)
 
 
-### Without linking...
-semi.comp <-
-# 'mb.leaf.prok ~ comp.micro.prok + mb.moss.prok + comp.macro.lp + prey #+ mb.leaf.euk
-# mb.leaf.euk ~ comp.micro.euk + mb.moss.euk + comp.macro.le + prey #+ mb.leaf.prok
-#
-# mb.leaf.prok ~ mb.leaf.euk
-# mb.leaf.euk ~ mb.leaf.prok'
-
-
-'#mb.moss.prok ~ comp.macro.mp
-# mb.moss.euk ~ comp.macro.me
-# prey ~ comp.macro.prey + comp.micro.prey
-
-mb.leaf.prok ~ comp.micro.prok + mb.moss.prok + comp.macro.lp + prey #+ mb.leaf.euk
-mb.leaf.euk ~ comp.micro.euk + mb.moss.euk + comp.macro.le + prey #+ mb.leaf.prok
-
-mb.leaf.euk ~ mb.leaf.prok
-mb.leaf.prok ~ mb.leaf.euk'
-
-
-fit.semi.comp <- sem(semi.comp, data = smpMeta.df)
-summary(fit.semi.comp, rsq = TRUE, fit.measures = TRUE)
-
-
-resid(fit.semi.comp, "cor") # misfit of the bivariate associations
-modindices(fit.semi.comp, minimum.value = 3, op = "~")
-
-
-# ## Update model
-# fit.comp.up <- update(fit.comp,
-#                            add = "prey ~ comp.micro.prok")
-# summary(fit.comp.up, fit.measures = TRUE, rsq = TRUE)
-
-
-fit.semi.comp.b <- bsem(semi.comp, data = smpMeta.df,
-                        n.chains = 4, burnin = 2000, sample = 4000,
-                        bcontrol = list(cores = 6)#,
-                        # control = list(adapt_delta = 0.9)
-                        )
-summary(fit.semi.comp.b, rsq = TRUE, fit.measures = TRUE)
-
-
-### Model selection
-blavCompare(fit.comp.b, fit.semi.comp.b)
-
-
 ################################################################################
-### Plot bestest model
-pdf(file = "SMP_pdf", height = 8.27, width = 6)
+### Plot model
+pdf(file = "SMP_SEM.pdf", height = 8.27, width = 6)
 semPaths(fit.comp.b, what = "est", whatLabels = "est", residuals = FALSE,
          intercepts = FALSE, sizeMan = 5, sizeMan2 = 3, edge.label.cex = 0.35,
          fade = FALSE, layout = "tree", style = "mx", nCharNodes = 0,

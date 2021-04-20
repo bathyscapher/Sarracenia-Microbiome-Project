@@ -16,10 +16,7 @@ rm(list = ls())
 
 ################################################################################
 ### Arguments
-# method <- "ASV"
 
-
-# baseDir <- "~/Documents/PhDFribourg/SMP/"
 smpDir <- "~/Sarracenia-Microbiome-Project/Thesis/"
 asvDir <- "~/Seafile/SMP_results"
 
