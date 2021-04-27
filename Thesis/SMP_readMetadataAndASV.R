@@ -626,6 +626,174 @@ readTaxa <- function (primer = c("16S", "18S"),
 
 
 ################################################################################
+### Read metadata
+readMetadata <- function (ps, primer = c("16S", "18S")) {
+  ## Leaf,  moss and DNA extraction metadata
+  setwd(mcDir)
+
+  ## Leaf samples
+  leaves <- read.table("csv/SMP_LeafSamples_2018.csv",
+                       header = TRUE, sep = ",", fill = FALSE)
+
+  leaves$SampleColor <- ordered(leaves$SampleColor,
+                                levels = c("clear", "cloudy", "green", "red",
+                                           "brown"))
+
+  ## Canopy cover
+  cover <- read.table("csv/SMP_CanopyCover.csv",
+                      header = TRUE, sep = "\t", fill = FALSE,
+                      check.names = TRUE)
+
+  leaves <- merge(leaves, cover[, c(1, 2, 8)],
+                  by.x = c("Site", 'PlantOld'), by.y = c("Site", 'PlantOld'))
+
+  ## Leaf morphometry
+  morph <- read.table("csv/SMP_LeafMorphometrics_2018.csv",
+                      header = TRUE, sep = "\t", fill = FALSE)
+
+  ## Moss samples
+  mosses <- read.table("csv/SMP_MossSamples_2018.csv",
+                       header = TRUE, sep = "\t", fill = FALSE)
+
+  ## Positive and negative controls
+  controls <- read.table("csv/SMP_2018_MC_NC.csv",
+                         header = TRUE, sep = "\t", fill = FALSE)
+
+  ## Geographical position: reduce to 1D with MDS (and plot if needed)
+  xy <- read.table("csv/SMP_Plants_XY_m_CH1903.csv", header = TRUE,
+                   sep = "\t")
+  rownames(xy) <- xy$IDPlant
+
+  xy.mds <- cmdscale(dist(xy[, c(1:2)]), eig = TRUE, k = 1)
+  # xy.mds$GOF # should be > 0.8
+  distance <- as.data.frame(xy.mds$points)
+  colnames(distance) <- "Distance"
+  distance$PlantID <- row.names(distance)
+
+  ## Temperature from data logger
+  logger <- read.table("csv/SMP_allLoggersDateTrimmed.csv",
+                       header = TRUE, sep = ";", check.names = TRUE)
+
+  options(digits.secs = 0)
+  temp.mu <- aggregate(logger$Temperature, by = list(logger$Site), FUN = mean)
+  colnames(temp.mu) <- c("Site", "MeanTemperature")
+
+  ## Complete leaf morphology
+  leaves.up <- merge(leaves, morph[, c(3, 9:13)],
+                     by.x = 'FullIDOld', by.y = 'FullIDOld')
+
+  ## Complete moss data
+  colnames(mosses)[11] <- "SampleVolume_mL"
+  mosses$Leaf <- paste0(0, mosses$Replicate)
+  mosses$SampleColor <- NA
+  mosses$PotentialVolume_mL <- NA_real_
+  mosses$pH <- NA_real_
+  mosses$PitcherLength <- NA_real_
+  mosses$CanopyCover <- NA_real_
+  mosses$KeelWidth <- NA_real_
+  mosses$PitcherWidth <- NA_real_
+  mosses$MouthWidth <- NA_real_
+  mosses$Comments <- NA
+
+  mosses.leaves <- rbind(mosses[, c(1:4, 6:7, 11, 13:22)],
+                         leaves.up[, c(1, 2, 6:13, 16, 44:49)])
+  mosses.leaves$Leaf <- as.factor(mosses.leaves$Leaf)
+
+  ## Complete controls
+  controls$SampleVolume_mL <- NA_real_
+  controls$SampleColor <- NA
+  controls$PotentialVolume_mL <- NA_real_
+  controls$pH <- NA_real_
+  controls$PitcherLength <- NA_real_
+  controls$CanopyCover <- NA_real_
+  controls$KeelWidth <- NA_real_
+  controls$PitcherWidth <- NA_real_
+  controls$MouthWidth <- NA_real_
+  controls$Comments <- NA
+
+  ## Merge all
+  mosses.leaves.ctr <- rbind(controls[, c(1:2, 5:7, 9:10, 27:36)],
+                             mosses.leaves)
+
+  mcMeta <- merge(mosses.leaves.ctr, temp.mu, by = "Site", all.x = TRUE)
+  mcMeta$PlantID <- paste(mcMeta$Site, mcMeta$SectorPlant, sep = "-")
+  mcMeta <- merge(mcMeta, distance, by = "PlantID", all.x = TRUE)
+
+  ## Remove 16S (= P and R) or 18S (= U and V) MC
+  if (primer == "16S")
+  {mcMeta <- mcMeta[!grepl("U|V", mcMeta$Succession), ]}
+  if (primer == "18S")
+  {mcMeta <- mcMeta[!grepl("P|R", mcMeta$Succession), ]}
+
+  mcMeta <- droplevels(mcMeta)
+
+
+  mcMeta$Site <- ordered(mcMeta$Site, levels = c("CB", "LT", "LE", "LV",
+                                                 "LM", "MC", "NC"))
+  mcMeta$Sector <- as.factor(mcMeta$Sector)
+
+  ## Add altitude
+  sites <- read.table("csv/SMP_SarraceniaField.csv", header = TRUE, sep = ";")
+  mcMeta <- merge(mcMeta, sites[, c(1, 8)], by = "Site", all.x = TRUE)
+
+
+  ## Replace Succession with habitat age [d] (= days since first rain event)
+  age <- read.table("csv/SMP_SampleDates.csv", header = TRUE,
+                    sep = "\t", check.names = TRUE)
+  mcMeta <- merge(mcMeta, age, by = c("Site", "Succession"), all.x = TRUE)
+  mcMeta$Succession <- as.factor(mcMeta$Succession)
+
+  ## Remove spacers in sample names
+  mcMeta$FullID <- gsub("[-|_]", "", mcMeta$FullID)
+
+  ## Prey items
+  prey <- read.table("csv/SMP_Prey_clean.csv", sep = "\t", header = TRUE)
+
+  prey$prey.items <- rowSums(prey[, -c(12, 20)])
+  prey
+
+  mcMeta <- merge(mcMeta, prey[, c(12, 21)], by = "FullID", all = TRUE)
+
+  ## Duplicate first all moss samples, then all samples and add a resequenced
+  ##  tag ("r") to the end of the sample names
+  moss <- mcMeta[mcMeta$Succession == "M", ]
+  moss$FullID <- gsub("M$", "Q", moss$FullID)
+
+  mcMeta <- rbind(mcMeta, moss)
+
+  mcMeta.r <- mcMeta
+  mcMeta.r$FullID <- gsub("$", "r", mcMeta.r$FullID)
+
+  mcMeta <- rbind(mcMeta, mcMeta.r)
+
+
+  ## Rename succession
+  if (primer == "16S")
+  {
+    levels(mcMeta$Succession) <- c("Early", "Late", "Moss",
+                                   "NC Pilot", "NC SMP",
+                                   "16S MC Pilot", "16S MC SMP")
+  }
+  if (primer == "18S")
+  {
+    levels(mcMeta$Succession) <- c("Early", "Late", "Moss",
+                                   "NC Pilot", "NC SMP",
+                                   "18S MC Pilot", "18S MC SMP")
+  }
+
+
+  ## Match with sample names from dada2
+  mcMeta <- mcMeta[match(sample_names(mc), mcMeta$FullID), ]
+
+  ## Convert data.frame to sample_data and add row.names
+  mcMeta <- sample_data(mcMeta)
+  row.names(mcMeta) <- mcMeta$FullID
+
+  return(mcMeta)
+}
+
+
+################################################################################
 ################################################################################
 ################################################################################
 ################################################################################

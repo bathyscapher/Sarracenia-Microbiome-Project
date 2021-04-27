@@ -184,7 +184,6 @@ saveRDS(dadaR, "dadaR_SMP18S.rds")
 
 
 ### Merge paired reads
-
 ## 16S
 # contigs <- mergePairs(dadaF, rF.cut.f, dadaR, rR.cut.f, verbose = TRUE)
 
