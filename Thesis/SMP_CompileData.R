@@ -9,8 +9,6 @@
 
 
 library("phyloseq")
-
-
 rm(list = ls())
 
 
@@ -19,8 +17,6 @@ rm(list = ls())
 
 smpDir <- "~/Sarracenia-Microbiome-Project/Thesis/"
 asvDir <- "~/Seafile/SMP_results"
-
-# primer <- "16S"
 
 
 source("~/Sarracenia-Microbiome-Project/Thesis/SMP_readMetadataAndASV.R")
@@ -31,6 +27,7 @@ source("~/Sarracenia-Microbiome-Project/Thesis/SMP_readMetadataAndASV.R")
 ### Prokaryotes
 prok.l <- readTaxa(primer = "16S", mosses = "without", glom = TRUE)
 prok.l
+
 
 list2env(prok.l, globalenv())
 
@@ -54,10 +51,6 @@ euk.s <- smp.s
 euk.p <- smp.p
 rm(smp, smp.a, smp.s, smp.p, euk.l)
 
-### Save
-saveRDS(prok.a, "rds/SMP_prok.a.RDS")
-saveRDS(euk.a, "rds/SMP_euk.a.RDS")
-
 
 ### Merge both
 ## Renumber taxa
@@ -76,6 +69,8 @@ smp
 
 
 ### Save
+saveRDS(prok.a, "rds/SMP_prok.a.RDS")
+saveRDS(euk.a, "rds/SMP_euk.a.RDS")
 saveRDS(smp, "rds/SMP_smp.RDS")
 
 
@@ -110,10 +105,6 @@ moss.euk.a <- moss.a
 moss.euk.s <- moss.s
 rm(moss.euk.l, moss, moss.a, moss.s)
 
-### Save
-saveRDS(moss.prok.a, "rds/SMP_moss20.prok.a.RDS")
-saveRDS(moss.euk.a, "rds/SMP_moss20.euk.a.RDS")
-
 
 ### Merge both
 ## Renumber taxa
@@ -132,7 +123,9 @@ tax_table(moss)
 moss
 
 
-## Save
+## Export
+saveRDS(moss.prok.a, "rds/SMP_moss20.prok.a.RDS")
+saveRDS(moss.euk.a, "rds/SMP_moss20.euk.a.RDS")
 saveRDS(moss, "rds/SMP_moss20.RDS")
 
 
@@ -185,10 +178,10 @@ tax_table(moss)
 moss
 
 
-## Mosses separately
-saveRDS(moss.prok.a, "SMP_moss40.prok.a.RDS")
-saveRDS(moss.euk.a, "SMP_moss40.euk.a.RDS")
-saveRDS(moss, "SMP_moss40.RDS")
+## Export
+saveRDS(moss.prok.a, "rds/SMP_moss40.prok.a.RDS")
+saveRDS(moss.euk.a, "rds/SMP_moss40.euk.a.RDS")
+saveRDS(moss, "rds/SMP_moss40.RDS")
 
 
 ################################################################################

@@ -19,13 +19,12 @@ library("gridExtra")
 
 
 rm(list = ls())
-
-
-setwd("~/Sarracenia-Microbiome-Project/Thesis")
+# setwd("~/Seafile/SMP_results/SMP_16S_reseq")
+setwd("~/Seafile/SMP_results/SMP_18S_reseq")
 
 
 ## Set number of cores
-ncore <- 10
+ncore <- 6
 
 
 ################################################################################
@@ -177,8 +176,8 @@ dadaR <- dada(rR.cut.f, err = errR, multithread = ncore)
 # dadaR <- readRDS("dadaR_SMP16S.rds")
 
 
-saveRDS(dadaF, "dadaF_SMP18S.rds")
-saveRDS(dadaR, "dadaR_SMP18S.rds")
+# saveRDS(dadaF, "dadaF_SMP18S.rds")
+# saveRDS(dadaR, "dadaR_SMP18S.rds")
 # dadaF <- readRDS("dadaF_SMP18S.rds")
 # dadaR <- readRDS("dadaR_SMP18S.rds")
 
@@ -225,7 +224,7 @@ sum(seqtab.nochim) / sum(seqtab)
 
 ### Assign taxonomy with RDP classifier
 taxa <- assignTaxonomy(seqtab.nochim,
-                       "silva_nr_v138_train_set.fa.gz",
+                       "../silva_nr_v138_train_set.fa.gz",
                        multithread = TRUE, verbose = TRUE)
 
 

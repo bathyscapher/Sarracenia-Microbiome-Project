@@ -366,7 +366,8 @@ readTaxa <- function (primer = c("16S", "18S"),
                                                     "Apicomplexa",
                                                     "Mollusca", "Vertebrata",
                                                     "Microsporidia",
-                                                    "Mucoromycota", NA) |
+                                                    "Mucoromycota",
+                                                    "Archaeorhizomycetes", NA) |
                                       Class %in% c("Insecta", "Ellipura",
                                                    "Embryophyta", "Arachnida",
                                                    "Heterophyidae",
@@ -530,7 +531,8 @@ readTaxa <- function (primer = c("16S", "18S"),
                                                       "Apicomplexa",
                                                       "Mollusca", "Vertebrata",
                                                       "Microsporidia",
-                                                      "Mucoromycota", NA) |
+                                                      "Mucoromycota",
+                                                      "Archaeorhizomycetes", NA) |
                                         Class %in% c("Insecta", "Ellipura",
                                                      "Embryophyta", "Arachnida",
                                                      "Heterophyidae",
