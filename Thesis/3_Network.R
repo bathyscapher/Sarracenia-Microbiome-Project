@@ -258,6 +258,7 @@ ecount(g3)
 
 
 table(V(g3)$Domain)
+table(V(g3)$SoilReaction)
 
 
 table(degree(g3))
