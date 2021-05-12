@@ -52,6 +52,11 @@ euk.p <- smp.p
 rm(smp, smp.a, smp.s, smp.p, euk.l)
 
 
+## Save
+saveRDS(prok.a, "rds/SMP_prok.a.RDS")
+saveRDS(euk.a, "rds/SMP_euk.a.RDS")
+
+
 ### Merge both
 ## Renumber taxa
 taxa_names(prok.a) <- paste0("ASV", seq(ntaxa(prok.a)))
@@ -69,8 +74,6 @@ smp
 
 
 ### Save
-saveRDS(prok.a, "rds/SMP_prok.a.RDS")
-saveRDS(euk.a, "rds/SMP_euk.a.RDS")
 saveRDS(smp, "rds/SMP_smp.RDS")
 
 
@@ -106,6 +109,11 @@ moss.euk.s <- moss.s
 rm(moss.euk.l, moss, moss.a, moss.s)
 
 
+## Save
+saveRDS(moss.prok.a, "rds/SMP_moss20.prok.a.RDS")
+saveRDS(moss.euk.a, "rds/SMP_moss20.euk.a.RDS")
+
+
 ### Merge both
 ## Renumber taxa
 taxa_names(moss.prok.a) <- paste0("ASV", seq(ntaxa(moss.prok.a)))
@@ -123,9 +131,7 @@ tax_table(moss)
 moss
 
 
-## Export
-saveRDS(moss.prok.a, "rds/SMP_moss20.prok.a.RDS")
-saveRDS(moss.euk.a, "rds/SMP_moss20.euk.a.RDS")
+## Save
 saveRDS(moss, "rds/SMP_moss20.RDS")
 
 
@@ -160,6 +166,10 @@ moss.euk.a <- moss.a
 moss.euk.s <- moss.s
 rm(moss.euk.l, moss, moss.a, moss.s)
 
+## Save
+saveRDS(moss.prok.a, "rds/SMP_moss40.prok.a.RDS")
+saveRDS(moss.euk.a, "rds/SMP_moss40.euk.a.RDS")
+
 
 ### Merge both
 ## Renumber taxa
@@ -178,9 +188,7 @@ tax_table(moss)
 moss
 
 
-## Export
-saveRDS(moss.prok.a, "rds/SMP_moss40.prok.a.RDS")
-saveRDS(moss.euk.a, "rds/SMP_moss40.euk.a.RDS")
+## Save
 saveRDS(moss, "rds/SMP_moss40.RDS")
 
 
