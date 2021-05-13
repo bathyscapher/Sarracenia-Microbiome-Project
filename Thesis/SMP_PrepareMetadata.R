@@ -41,7 +41,6 @@ euk.a <- readRDS("rds/SMP_euk.a.RDS")
 ## Merged
 moss.prok.a <- readRDS("rds/SMP_moss20.prok.a.RDS")
 moss.euk.a <- readRDS("rds/SMP_moss20.euk.a.RDS")
-# moss <- readRDS("SMP_moss20.RDS")
 
 
 ################################################################################
@@ -281,7 +280,7 @@ dev.off()
 
 ################################################################################
 ## Unscaled data
-smpMeta.df <- read.table("csv/SMP_Metadata_SEM_raw.csv", sep = "\t")
+smpMeta.df <- read.table("csv/SMP_Metadata_SEM_scaled.csv", sep = "\t")
 
 
 smpMeta.df$Sector <- as.factor(smpMeta.df$Sector)
