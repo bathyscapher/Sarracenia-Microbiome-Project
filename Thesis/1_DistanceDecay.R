@@ -198,7 +198,7 @@ ggplot(bc.distance, aes(x = round(log1p(Geo_distance), digits = 1),
 
 
 ## Regression coefficients
-bc.distance.d <- subset(bc.distance.s, bc.distance$Domain == "Prokaryotes")
+bc.distance.d <- subset(bc.distance.s, bc.distance$Domain == "Eukaryotes")
 
 
 dd.fit <- lmList(BC_distance ~ log1p(Geo_distance) | Pairs,
@@ -209,6 +209,7 @@ summary(dd.fit)
 ### BC distance sorted by median
 ## Subset by domain (change for Prok- and Eukaryotes, respectively)
 bc.distance.d <- bc.distance[bc.distance$Domain == "Prokaryotes", ]
+# bc.distance.d <- bc.distance[bc.distance$Domain == "Eukaryotes", ]
 
 
 ## Sort by median
@@ -232,14 +233,13 @@ bc.distance.d <- bc.distance.d[!bc.distance.d$Succession == "Mix", ]
 ggplot(bc.distance.d, aes(x = Pairs, y = BC_distance, fill = col.box)) +
   geom_boxplot(outlier.shape = 21) +
   facet_wrap(~ Domain) +
-  theme(legend.position = "top") +
   scale_colour_manual(values = ramp) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        axis.text.y = element_blank()) +
+        # axis.text.y = element_blank(), # outcomment for eukaryotes
+        legend.position = "top") +
   ylim(0, 1) +
   xlab("") +
-  # ylab("Bray-Curtis dissimilarity") +
-  ylab("") +
+  ylab("Bray-Curtis dissimilarity") +
   scale_fill_identity()
 # ggsave("SMP_16S_BC-dissimilarity.pdf", width = 6.5, height = 8.27)
 # ggsave("SMP_18S_BC-dissimilarity.pdf", width = 6.5, height = 8.27)

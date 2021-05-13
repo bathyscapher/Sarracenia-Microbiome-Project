@@ -55,7 +55,6 @@ overlaps.p <- data.frame(Pitcher = rep(NA_character_, length(pitchers)),
 
 
 k <- 1
-# i <- 1; j <- 1
 for (i in 1:length(mosses)){
   site.sector <- gsub(".{4}$", "", mosses[i])
   print(site.sector)
@@ -97,7 +96,6 @@ overlaps.e <- data.frame(Pitcher = rep(NA_character_, length(pitchers)),
 
 
 k <- 1
-# i <- 1; j <- 1
 for (i in 1:length(mosses)){
   site.sector <- gsub(".{4}$", "", mosses[i])
   print(site.sector)
@@ -154,21 +152,21 @@ ggplot(overlaps) +
 # ggsave("SMP_Overlap.pdf", width = 11.69, height = 6)
 
 
-## Get statistics
-aggregate(Overlap ~ Site + Domain, data = overlaps, FUN = range)
-aggregate(Overlap ~ Site + Domain, data = overlaps, FUN = mean)
-
-
+## Get overlap statistics
 aggregate(Overlap ~ Domain, data = overlaps, FUN = range)
 aggregate(Overlap ~ Domain, data = overlaps, FUN = mean)
 aggregate(Overlap ~ Domain, data = overlaps, FUN = sd)
 
 
+aggregate(Overlap ~ Site + Domain, data = overlaps, FUN = range)
+aggregate(Overlap ~ Site + Domain, data = overlaps, FUN = mean)
+
+
 ################################################################################
 ### Alluvial diagrams = taxonomic overlap
 ## Pitcher and moss
-# smp.moss <- merge_phyloseq(prok.a, moss.prok.a) # Prokaryotes
-smp.moss <- merge_phyloseq(euk.a, moss.euk.a) # Eukaryotes
+smp.moss <- merge_phyloseq(prok.a, moss.prok.a) # Prokaryotes
+# smp.moss <- merge_phyloseq(euk.a, moss.euk.a) # Eukaryotes
 
 
 tax.sm <- as.data.frame(smp.moss@tax_table@.Data)
@@ -187,10 +185,10 @@ rm(tax.sm, otu.sm)
 
 
 ## Pitcher and moss taxa
-# mb.pitcher <- colnames(otu_table(prok.a))
-# mb.moss <- colnames(otu_table(moss.prok.a))
-mb.pitcher <- colnames(otu_table(euk.a))
-mb.moss <- colnames(otu_table(moss.euk.a))
+mb.pitcher <- colnames(otu_table(prok.a))
+mb.moss <- colnames(otu_table(moss.prok.a))
+# mb.pitcher <- colnames(otu_table(euk.a))
+# mb.moss <- colnames(otu_table(moss.euk.a))
 
 shared <- intersect(mb.pitcher, mb.moss)
 only.p <- setdiff(mb.pitcher, mb.moss)
@@ -221,7 +219,7 @@ tax.otu.sm <- tax.otu.sm[!(tax.otu.sm$Habitat == "Moss"), ]
 
 ## Rename as they match with Order levels otherwise
 tax.otu.sm$Genus <- gsub("unclassified", "unclassified_ge", tax.otu.sm$Genus)
-# intersect(unique(tax.otu.sm$Genus), unique(tax.otu.sm$Order))
+
 
 tax.otu.sm$Genus <- factor(tax.otu.sm$Genus,
                            levels = as.character(unique(tax.otu.sm$Genus)))
@@ -232,23 +230,23 @@ ggplot(data = tax.otu.sm,
   stat_alluvium(aes(fill = Habitat)) +
   geom_stratum(linetype = 1, lwd = 0.01) +
   ## prok
-  # geom_text(stat = "stratum", aes(label = after_stat(stratum)), size = 0.85) +
+  geom_text(stat = "stratum", aes(label = after_stat(stratum)), size = 0.85) +
   ## euk
-  geom_text(stat = "stratum", aes(label = after_stat(stratum)), size = 1.8) +
+  # geom_text(stat = "stratum", aes(label = after_stat(stratum)), size = 1.8) +
   scale_fill_manual(values = c("#D55E00", "#009E73")) +
   theme_void() +
   theme(legend.position = "none")
 # ggsave("SMP_16S_Alluvial_ASV.pdf", width = 8.27, height = 11.69)
-ggsave("SMP_18S_Alluvial_ASV.pdf", width = 8.27, height = 11.69)
+# ggsave("SMP_18S_Alluvial_ASV.pdf", width = 8.27, height = 11.69)
 
 
 ################################################################################
 ### Venn diagrams for site-level overlap comparison
 ## Pitcher and moss taxa
-mb.pitcher <- colnames(otu_table(prok.a))
-mb.moss <- colnames(otu_table(moss.prok.a))
-# mb.pitcher <- colnames(otu_table(euk.a))
-# mb.moss <- colnames(otu_table(moss.euk.a))
+# mb.pitcher <- colnames(otu_table(prok.a))
+# mb.moss <- colnames(otu_table(moss.prok.a))
+mb.pitcher <- colnames(otu_table(euk.a))
+mb.moss <- colnames(otu_table(moss.euk.a))
 
 
 ## Venn global and site-wise
@@ -275,10 +273,10 @@ dev.off()
 
 ################################################################################
 ## Site-wise
-smp.a <- prok.a
-moss.a <- moss.prok.a
-# smp.a <- euk.a
-# moss.a <- moss.euk.a
+# smp.a <- prok.a
+# moss.a <- moss.prok.a
+smp.a <- euk.a
+moss.a <- moss.euk.a
 
 
 sites <- levels(smp.a@sam_data$Site)
@@ -320,8 +318,8 @@ for (i in 1:length(sites)) {
 }
 
 
-pdf("SMP_venn_16S_Sitewise.pdf", height = 7, width = 8.27)
-# pdf("SMP_venn_18S_Sitewise.pdf", height = 7, width = 8.27)
+# pdf("SMP_venn_16S_Sitewise.pdf", height = 7, width = 8.27)
+pdf("SMP_venn_18S_Sitewise.pdf", height = 7, width = 8.27)
 grid.arrange(grobTree(vennAll), grobTree(vennCB), grobTree(vennLT),
              grobTree(vennLE), grobTree(vennLV), grobTree(vennLM), ncol = 2)
 dev.off()

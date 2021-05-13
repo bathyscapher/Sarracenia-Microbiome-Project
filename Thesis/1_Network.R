@@ -14,7 +14,6 @@ theme_set(theme_bw(base_size = 20) +
             theme(rect = element_rect(fill = "transparent")))
 library("reshape2")
 library("igraph")
-# library("vegan")
 library("Hmisc")
 
 
@@ -32,8 +31,6 @@ gradCol <- c("#D55E00", "#E69F00", "#F0E442", "#009E73", "#56B4E9")
 
 ################################################################################
 ### Pitcher data
-# prok.a <- readRDS("SMP_prok.a.RDS")
-# euk.a <- readRDS("SMP_euk.a.RDS")
 smp <- readRDS("rds/SMP_smp.RDS")
 
 
@@ -113,7 +110,7 @@ otu.target <- otu.target[order(otu.target$to_sort), ]
 E(g3)
 V(g3)
 V(g3)$name
-# V(g3)$degree <- degree(g3)
+V(g3)$degree <- degree(g3) # connectivity
 
 
 ## Get pairwise correlations

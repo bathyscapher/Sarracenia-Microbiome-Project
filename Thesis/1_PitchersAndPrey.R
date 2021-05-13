@@ -134,8 +134,9 @@ ggplot(tax.otu.lm, aes(x = factor(Phylum, level = rev(tax)), y = Count,
 ################################################################################
 ### nMDS
 ## Select domain
-ps <- prok.a
-# ps <- euk.a
+# ps <- prok.a
+ps <- euk.a
+
 
 ## Group insect counts
 sample_data(ps)$prey.items <- as.factor(sample_data(ps)$prey.items)
@@ -181,7 +182,7 @@ plot_ordination(ps, smp.nmds, shape = "Site", color = "prey.items",
         legend.box = "vertical") +
   xlab("nMDS1") +
   ylab("nMDS2")
-ggsave("SMP_16S_nMDS_Prey.pdf", width = 8.27, height = 8.27)
+# ggsave("SMP_16S_nMDS_Prey.pdf", width = 8.27, height = 8.27)
 # ggsave("SMP_18S_nMDS_Prey.pdf", width = 8.27, height = 8.27)
 
 
@@ -210,8 +211,8 @@ prey <- log1p(prey)
 
 
 ## Pro- or eukaryotes
-smp.a <- prok.a
-# smp.a <- euk.a
+# smp.a <- prok.a
+smp.a <- euk.a
 
 
 ## Subset microbiome to samples with prey only

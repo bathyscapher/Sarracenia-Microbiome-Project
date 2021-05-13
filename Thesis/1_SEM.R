@@ -29,7 +29,7 @@ colnames(smpMeta.df)
 
 
 ## ln+1-transform prey.items to remove the curvy relationship with prey
-smpMeta.df$prey.items <- log1p(smpMeta.df$prey.items)
+# smpMeta.df$prey.items <- log1p(smpMeta.df$prey.items)
 
 
 ################################################################################
@@ -241,12 +241,11 @@ rm(macro, comp.macro1, comp.macro2)
 
 
 ################################################################################
-check.vars <-
 newdata2 <- smpMeta.df[c("Site",
                          "mb.leaf.prok", "comp.macro.lp", "comp.micro.prok",
                          "mb.leaf.euk", "comp.macro.le", "comp.micro.euk",
                          "mb.moss.prok", "comp.macro.mp",
-                         "mb.moss.euk", "comp.macro.me",
+                         "mb.moss.euk", "comp.macro.me", "prey.items",
                          "prey", "comp.macro.prey", "comp.micro.prey")]
 print(round(cor(newdata2[, -1], use = "complete"), digits = 1))
 
@@ -258,8 +257,8 @@ pairsWithAbline <- function(x, y){
 
 pairs(newdata2[, -1], panel = pairsWithAbline)
 pairs(newdata2[, -1], panel = panel.smooth)
-#
-# rm(check1.vars, pairsWithAbline, newdata2)
+
+rm(pairsWithAbline, newdata2)
 
 
 ## With GGally
@@ -353,7 +352,7 @@ bc
 ################################################################################
 ### Plot model
 pdf(file = "SMP_SEM.pdf", height = 8.27, width = 6)
-semPaths(fit.comp.b, what = "est", whatLabels = "est", residuals = FALSE,
+semPaths(fit.comp.wo.b, what = "est", whatLabels = "est", residuals = FALSE,
          intercepts = FALSE, sizeMan = 5, sizeMan2 = 3, edge.label.cex = 0.35,
          fade = FALSE, layout = "tree", style = "mx", nCharNodes = 0,
          posCol = "#009e73ff", negCol = "#d55e00ff", edge.label.color = "black",
