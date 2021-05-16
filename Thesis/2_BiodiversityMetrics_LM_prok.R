@@ -723,7 +723,7 @@ even.nest <- brm(J ~ pH + prey.items + SampleColor + Age_d +
                    (1 | Site / Sector),
                  family = gaussian(), prior = priors.nest, cores = 8,
                  iter = 8000, save_all_pars = TRUE, seed = seed,
-                 control = list(adapt_delta = 0.99999, max_treedepth = 15),
+                 control = list(adapt_delta = 0.999999, max_treedepth = 15),
                  data = even.p)
 summary(even.nest)
 even.nest$fit
@@ -793,26 +793,6 @@ save(even.int, file = "StanLM/SMP_LM_even.int_prok.gz", compress = "gzip")
 
 loo_compare(even.nest, even.dist, even.int, criterion = "waic")
 loo_compare(even.nest.loo, even.dist.loo)
-
-
-plot(even.nest)
-
-
-mcmc_plot(even.nest, type = "intervals") +# rhat_hist neff_hist intervals areas
-  geom_vline(xintercept = 0, linetype = "dashed") +
-  theme_bw()
-# ggsave("SMP_LM_even_prok.pdf", width = 11.69 / 2, height = 8.27 / 2)
-
-
-## Fit of posterior distribution (yrep) to actual data (y) and Bayesian R^2
-brms::pp_check(even.nest, nsamples = 1000)
-pp_check(even.nest, type = "scatter_avg_grouped", group = "Site") +
-  geom_abline(intercept = 0, slope = 1 , color = "red", lty = 2)
-bayes_R2(even.nest)
-
-
-plot(conditional_effects(even.nest, resp = "bmi"), ask = TRUE, points = TRUE)
-plot(marginal_effects(even.nest), ask = TRUE, points = TRUE)
 
 
 ## Plot random effects

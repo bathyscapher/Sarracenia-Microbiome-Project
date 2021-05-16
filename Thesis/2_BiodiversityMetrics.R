@@ -119,6 +119,7 @@ ggplot(alpha, aes(x = MeanTemperature, y = alpha, color = Site)) +
 
 
 ## Calculate fit
+# alpha.d <- alpha[alpha$Domain == "Prokaryotes", ]
 alpha.d <- alpha[alpha$Domain == "Eukaryotes", ]
 
 
@@ -464,7 +465,8 @@ ggplot(even, aes(x = MeanTemperature, y = J, color = Site)) +
 
 
 ## Calculate fit
-even.d <- even[even$Domain == "Prokaryotes", ]
+# even.d <- even[even$Domain == "Prokaryotes", ]
+even.d <- even[even$Domain == "Eukaryotes", ]
 
 
 e.fit <- lmList(J ~ MeanTemperature | Succession,
