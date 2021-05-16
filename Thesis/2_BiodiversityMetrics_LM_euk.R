@@ -15,12 +15,9 @@ theme_set(theme_bw(base_size = 20) +
             theme(rect = element_rect(fill = "transparent")))
 library("reshape2")
 library("brms")
-# library("rstan")
 
 
 rm(list = ls())
-
-
 setwd("~/Sarracenia-Microbiome-Project/Thesis/")
 
 
@@ -280,7 +277,7 @@ alpha.nest <- brm(alpha ~ pH + prey.items + SampleColor + Age_d +
                   (1 | Site / Sector),
                   family = gaussian(), prior = priors.nest, cores = 8,
                   iter = 8000, save_all_pars = TRUE, seed = seed,
-                  control = list(adapt_delta = 0.999999999999,
+                  control = list(adapt_delta = 0.99999999999999,
                                  max_treedepth = 15),
                   data = alpha.e)
 summary(alpha.nest)
@@ -476,7 +473,7 @@ beta.int <- brm(beta ~ pH * prey.items * Age_d + SampleVolume_mL + CanopyCover +
                   beta.OtherDomain + (1 | Site / Sector),
                 save_all_pars = TRUE, seed = seed,
                 family = gaussian(), prior = priors.int, cores = 8, iter = 8000,
-                control = list(adapt_delta = 0.99, max_treedepth = 15),
+                control = list(adapt_delta = 0.999, max_treedepth = 15),
                 data = beta.e)
 summary(beta.int)
 beta.int$fit
