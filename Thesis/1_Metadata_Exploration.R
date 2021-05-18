@@ -39,7 +39,6 @@ euk.a <- readRDS("rds/SMP_euk.a.RDS")
 ## Merged
 moss.prok.a <- readRDS("rds/SMP_moss20.prok.a.RDS")
 moss.euk.a <- readRDS("rds/SMP_moss20.euk.a.RDS")
-# moss <- readRDS("SMP_moss20.RDS")
 
 
 ################################################################################
@@ -171,7 +170,8 @@ tax <- c("Crenarchaeota", ## Archaea
          "Actinobacteriota", "Armatimonadota", "Cyanobacteria", "Firmicutes",
          "WPS-2", ## ?
          "Amoebozoa_ph", "Schizoplasmodiida", ## Amoeba
-         "Bicosoecida", "Ochrophyta_ph", "Peronosporomycetes", ## SAR:Heterokonta
+         ## SAR:Heterokonta
+         "Diatomea", "Bicosoecida", "Ochrophyta_ph", "Peronosporomycetes",
          "Cercozoa", "Retaria", ## SAR: Rhizaria
          ## Harosa:Alveolata
          "Ciliophora", "Dinoflagellata", "Protalveolata",
