@@ -6,5 +6,3 @@ The **Sarracenia Microbiome Project** analyses the composition of this microbial
 This repository collects affiliated data-processing scripts and bioinformatical and statistical analyses from the thesis and resulting publications.
 
 ![alt text](img/SMP_Logo.png "Sarracenia Micriobiome Project Logo")
-
-test
