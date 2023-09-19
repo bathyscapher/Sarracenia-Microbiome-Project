@@ -12,6 +12,6 @@ Raw sequences are publicly [available on the servers of the National Center for 
 
 --------------------
 # Affiliated publications (in preparation)
-* Community assembly and structure of natural microcosms
+* Community assembly and structure of natural microcosms: see [repo "pitcher-microbiomes"](https://github.com/bathyscapher/pitcher-microbiomes)
 * Drivers of diversity in *Sarracenia purpurea* microcosms
 * Habitat conditions rather than moss composition mediate microbial community structure in Swiss peatlands hosting *Sarracenia purpurea*: see [repo "peatland-microbes"](https://github.com/bathyscapher/peatland-microbes).
