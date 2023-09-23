@@ -1,0 +1,15 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*zip
+*tar.gz
+refs/
+**/16S
+**/18S
+**/geographic
+**/temporal
+**/Greenhouse
+**/GreenhouseExpData
+**/fastq
+
