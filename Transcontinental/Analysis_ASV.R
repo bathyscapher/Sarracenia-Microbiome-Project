@@ -1,6 +1,6 @@
 ################################################################################
 ################################################################################
-### SMP ASV data
+# SMP ASV data
 ################################################################################
 
 
@@ -14,23 +14,23 @@ rm(list = ls())
 
 
 ################################################################################
-### Read metadata
-psMeta.df <- read.table("~/Sarracenia-Microbiome-Project/Transcontinental/SMP_Pool.csv",
+# Read metadata ################################################################
+psMeta.df <- read.table("SMP_Pool.csv",
                         sep = "\t", header = TRUE)
 psMeta <- sample_data(psMeta.df)
 row.names(psMeta) <- psMeta$ID
 
 
 ### List all working directories and abbreviations
-wd <- c("/scratch/pSMP/16S_raw_data_2015/FASTQ/",
-        "/scratch/pSMP/18S_raw_data_2015/FASTQ/",
-        "/scratch/pSMP/Boynton/geo/",
-        "/scratch/pSMP/Boynton/temp/",
-        "/scratch/pSMP/Korn/SMP_16S_reseq/",
-        "/scratch/pSMP/Korn/SMP_18S_reseq/",
-        "/scratch/pSMP/Young/prok/",
-        "/scratch/pSMP/Young/euk/",
-        "/scratch/pSMP/Young_Greenhouse/")
+wd <- c("Bittleston/16S/",
+        "Bittleston/18S/",
+        "Boynton/geo/",
+        "Boynton/temp/",
+        "Korn/SMP_16S_reseq/",
+        "Korn/SMP_18S_reseq/",
+        "Young/16S/",
+        "Young/18S/",
+        "Young_Greenhouse/")
 
 ps.l <- c("eb.p", "eb.e", "pb.g", "pb.t", "rk.p", "rk.e", "ey.p", "ey.e",
           "ey.g")
@@ -41,7 +41,7 @@ ps.l <- c("eb.p", "eb.e", "pb.g", "pb.t", "rk.p", "rk.e", "ey.p", "ey.e",
 for (i in 1:length(wd)) {
 
   ## Set workingdirectory and grab the sequences and taxonomy file
-  setwd(wd[i])
+  setwd(paste0("./", wd[i]))
   rds <- list.files(pattern = "seqtab|taxa_")
   seqtab.nochim <- readRDS(rds[1])
   taxa.id <- readRDS(rds[2])
@@ -67,7 +67,7 @@ for (i in 1:length(wd)) {
 }
 
 
-setwd("~/Sarracenia-Microbiome-Project/Transcontinental/")
+setwd("../..")
 
 
 ################################################################################

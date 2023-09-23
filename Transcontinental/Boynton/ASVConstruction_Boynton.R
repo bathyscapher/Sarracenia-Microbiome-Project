@@ -1,7 +1,4 @@
-################################################################################
-################################################################################
-### SMP ASV Boynton data
-################################################################################
+# SMP ASV Boynton data #########################################################
 
 rm(list = ls())
 
@@ -21,8 +18,7 @@ setwd("/scratch/pSMP/Boynton/temp/")
 ncore <- 9 # specify number of available cores
 
 
-################################################################################
-## SFF read lenght
+## SFF read lenght #############################################################
 # sff.geo <- readSffGeometry("/scratch/pSMP/Boynton/geo/geographic.sff")
 # sff.geo$nReads
 #
@@ -38,8 +34,7 @@ ncore <- 9 # specify number of available cores
 # dev.off()
 
 
-################################################################################
-### Read fastq
+## Read fastq ##################################################################
 list.files(pattern = "fastq.gz")
 
 rF <- sort(list.files(pattern = "gz", full.names = TRUE))
@@ -49,7 +44,7 @@ rF <- sort(list.files(pattern = "gz", full.names = TRUE))
 sample.names <- sapply(strsplit(basename(rF), "\\."), `[`, 1)
 
 
-### Check for primers
+## Check for primers ###########################################################
 ## Remove Ns from reads
 rF.fN <- file.path("filtN", basename(rF))
 filterAndTrim(rF, rF.fN, maxN = 0, multithread = TRUE)
@@ -125,7 +120,7 @@ rF.cut.f <- file.path("filtered", paste0(sample.names, "_filt.fastq.gz"))
 names(rF.cut.f) <- sample.names
 
 
-### Filtering, min and max values as in Boynton et al. 2019
+## Filtering, min and max values as in Boynton et al. 2019 #####################
 filt <- filterAndTrim(rF.cut, rF.cut.f, minLen = 200, maxLen = 1000,
                       maxN = 0, rm.phix = TRUE, truncQ = 2,
                       compress = TRUE, multithread = ncore, verbose = TRUE)
@@ -141,18 +136,18 @@ plot.rF.cut.f <- plotQualityProfile(rF.cut.f[startPlot:(startPlot + 2)])
 grid.arrange(plot.rF, plot.cut.rF.f, nrow = 2)
 
 
-### Estimate and plot the error rates
+## Estimate and plot the error rates ###########################################
 errF <- learnErrors(rF.cut.f, multithread = ncore, verbose = TRUE)
 
 plotErrors(errF, nominalQ = TRUE)
 
 
-## Dereplicate identical reads
+## Dereplicate identical reads #################################################
 derep.rF <- derepFastq(rF.cut.f, verbose = TRUE)
 names(derep.rF) <- sample.names
 
 
-### Core sample inference algorithm
+## Core sample inference algorithm #############################################
 dadaF <- dada(derep.rF, errF, HOMOPOLYMER_GAP_PENALTY = -1, BAND_SIZE = 32,
               multithread = ncore)
 # dadaF[[1]]
@@ -161,7 +156,7 @@ dadaF <- dada(derep.rF, errF, HOMOPOLYMER_GAP_PENALTY = -1, BAND_SIZE = 32,
 saveRDS(dadaF, "dadaF_PB.rds")
 
 
-### Construct ASV table
+## Construct ASV table #########################################################
 seqtab <- makeSequenceTable(dadaF)
 dim(seqtab)
 
@@ -171,7 +166,7 @@ table(nchar(getSequences(seqtab)))
 plot(table(nchar(getSequences(seqtab))))
 
 
-### Chimera detection
+## Chimera detection ###########################################################
 seqtab.nochim <- removeBimeraDenovo(seqtab, method = "consensus",
                                     multithread = ncore, verbose = TRUE)
 dim(seqtab.nochim)
@@ -181,7 +176,7 @@ sum(seqtab.nochim) / sum(seqtab)
 saveRDS(seqtab.nochim, "seqtab.nochim_PB.rds")
 
 
-### Track reads through the pipeline
+## Track reads through the pipeline ############################################
 getN <- function(x){
   sum(getUniques(x))
   }
@@ -193,21 +188,22 @@ rownames(track) <- sample.names
 head(track)
 
 
-### Assign taxonomy with RDP classifier
+## Assign taxonomy #############################################################
+### RDP classifier #############################################################
 seqtab.nochim <- readRDS("seqtab.nochim_PB.rds")
 
 taxa <- assignTaxonomy(seqtab.nochim,
-                       "~/Desktop/SMP_unsynced/silva/unite/sh_refs_qiime_ver8_dynamic_s_02.02.2019.fasta",
+                       "../../unite/sh_refs_qiime_ver8_dynamic_s_02.02.2019.fasta",
                        multithread = TRUE, verbose = TRUE)
 
 
 saveRDS(taxa, "taxa_PB.rds")
 
 
-### Assign taxonomy with IdTaxa and SILVA
+### IdTaxa and SILVA ###########################################################
 dna <- DNAStringSet(getSequences(seqtab.nochim))
 
-load("~/Desktop/SMP_unsynced/silva/UNITE_v2020_February2020.RData")
+load("../../silva/UNITE_v2020_February2020.RData")
 
 
 ids <- IdTaxa(dna, trainingSet, strand = "both", processors = ncore,
@@ -226,7 +222,3 @@ colnames(taxa.id) <- ranks
 rownames(taxa.id) <- getSequences(seqtab.nochim)
 
 saveRDS(taxa.id, "taxa.id_PB.rds")
-
-
-################################################################################
-################################################################################

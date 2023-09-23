@@ -1,8 +1,4 @@
-################################################################################
-################################################################################
-### SMP ASV Freedman data
-################################################################################
-
+# SMP ASV Freedman data ########################################################
 
 library("dada2")
 library("ShortRead")
@@ -16,11 +12,10 @@ rm(list = ls())
 # setwd("/scratch/pSMP/Freedman/Sam55/")
 setwd("/scratch/pSMP/Freedman/Samp1/")
 
-ncore <- 8 # specify number of available cores
+ncore <- 6 # specify number of available cores
 
 
-################################################################################
-### Read fastq
+## Read fastq ##################################################################
 list.files(pattern = "fastq")
 
 rF <- sort(list.files(pattern = "R1", full.names = TRUE))
@@ -32,12 +27,13 @@ sample.names <- gsub(".fastq.gz", "",
                      sapply(strsplit(basename(rF), "_"), `[`, 2))
 
 
-### Check for primers
+## Check for primers ###########################################################
 ## Remove Ns from reads
 rF.fN <- file.path("filtN", basename(rF))
 rR.fN <- file.path("filtN", basename(rR))
 
-filterAndTrim(rF, rF.fN, rR, rR.fN, maxN = 0, multithread = FALSE, matchIDs=F)
+filterAndTrim(rF, rF.fN, rR, rR.fN, maxN = 0,
+              multithread = FALSE, matchIDs = FALSE)
 
 
 ## Forward and reverse primer
@@ -70,8 +66,9 @@ cutadapt <- "/usr/bin/cutadapt"
 
 
 path.cut <- file.path(".", "cutPrimers")
-if(!dir.exists(path.cut))
-  {dir.create(path.cut)}
+if(!dir.exists(path.cut)) {
+  dir.create(path.cut)
+}
 rF.cut <- file.path(path.cut, basename(rF.fN))
 rR.cut <- file.path(path.cut, basename(rR.fN))
 
@@ -105,7 +102,7 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = rF.cut[[reads]]),
       REV.ReverseReads = sapply(REV.orients, primerHits, fn = rR.cut[[reads]]))
 
 
-### Quality filtering
+## Quality filtering ###########################################################
 ## Update sample names as some samples were filtered empty
 rF.fN <- sort(list.files(path = "filtN", pattern = "R1", full.names = TRUE))
 rR.fN <- sort(list.files(path = "filtN", pattern = "R2", full.names = TRUE))
@@ -144,7 +141,7 @@ plot.rR.f <- plotQualityProfile(rR.cut.f[startPlot:(startPlot + 2)])
 grid.arrange(plot.rF, plot.rR, plot.rF.f, plot.rR.f, ncol = 2)
 
 
-### Estimate and plot the error rates
+## Estimate and plot the error rates ###########################################
 errF <- learnErrors(rF.cut.f, multithread = ncore, verbose = TRUE)
 errR <- learnErrors(rR.cut.f, multithread = ncore, verbose = TRUE)
 
@@ -153,7 +150,7 @@ plotErrors(errF, nominalQ = TRUE)
 plotErrors(errR, nominalQ = TRUE)
 
 
-### Core sample inference algorithm
+## Core sample inference algorithm #############################################
 dadaF <- dada(rF.cut.f, err = errF, multithread = ncore)
 dadaR <- dada(rR.cut.f, err = errR, multithread = ncore)
 # dadaFs[[1]]
@@ -163,7 +160,7 @@ saveRDS(dadaF, "dadaF_ZF.rds")
 saveRDS(dadaR, "dadaR_ZF.rds")
 
 
-### Merge paired reads
+## Merge paired reads ##########################################################
 contigs <- mergePairs(dadaF, rF.cut.f, dadaR, rR.cut.f, verbose = TRUE)
 head(contigs[[1]])
 
@@ -171,7 +168,7 @@ head(contigs[[1]])
 saveRDS(contigs, "contigs_ZF.rds")
 
 
-### Construct ASV table
+## Construct ASV table #########################################################
 seqtab <- makeSequenceTable(contigs)
 dim(seqtab)
 
@@ -180,7 +177,7 @@ dim(seqtab)
 table(nchar(getSequences(seqtab)))
 
 
-### Chimera detection
+## Chimera detection ###########################################################
 seqtab.nochim <- removeBimeraDenovo(seqtab, method = "consensus",
                                     multithread = ncore, verbose = TRUE)
 dim(seqtab.nochim)
@@ -192,7 +189,7 @@ sum(seqtab.nochim) / sum(seqtab)
 seqtab.nochim <- readRDS("seqtab.nochim_ZF.rds")
 
 
-### Track reads through the pipeline
+## Track reads through the pipeline ############################################
 getN <- function(x){
   sum(getUniques(x))
   }
@@ -206,7 +203,8 @@ rownames(track) <- sample.names
 head(track)
 
 
-### Assign taxonomy with RDP classifier
+## Assign taxonomy #############################################################
+### RDP classifier #############################################################
 taxa <- assignTaxonomy(seqtab.nochim,
                        "~/Desktop/SMP_unsynced/silva/silva_nr_v132_train_set.fa.gz",
                        multithread = TRUE, verbose = TRUE)
@@ -214,7 +212,7 @@ taxa <- assignTaxonomy(seqtab.nochim,
 saveRDS(taxa, "taxa_ZF.rds")
 
 
-### Assign taxonomy with IdTaxa and SILVA
+### IdTaxa and SILVA ###########################################################
 dna <- DNAStringSet(getSequences(seqtab.nochim))
 
 load("~/Desktop/SMP_unsynced/silva/SILVA_SSU_r138_2019.RData")
@@ -236,7 +234,3 @@ colnames(taxa.id) <- ranks
 rownames(taxa.id) <- getSequences(seqtab.nochim)
 
 saveRDS(taxa.id, "taxa.id_ZF.rds")
-
-
-################################################################################
-################################################################################
