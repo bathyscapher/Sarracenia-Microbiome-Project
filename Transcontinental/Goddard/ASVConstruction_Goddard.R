@@ -1,4 +1,4 @@
-# SMP ASV Korn data ############################################################
+# SMP ASV Goddard data #########################################################
 
 library("dada2")
 library("ShortRead")
@@ -7,15 +7,15 @@ library("gridExtra")
 
 
 rm(list = ls())
-
+gc()
 
 primer <- "16S"
 # primer <- "18S"
 
 if (primer == "16S") {
-  setwd("Korn/16S/")
+  wd <- "Goddard/16S"
 } else if (primer == "18S") {
-  setwd("Korn/18S/")
+  wd <- "Goddard/18S"
 }
 
 
@@ -23,31 +23,35 @@ ncore <- 6 # specify number of available cores
 
 
 ## Read fastq ##################################################################
-list.files(pattern = "fastq")
+list.files(path = wd, pattern = "fastq")
 
-rF <- sort(list.files(pattern = "R1", full.names = TRUE))
-rR <- sort(list.files(pattern = "R2", full.names = TRUE))
+rF <- sort(list.files(path = wd, pattern = "R1", full.names = TRUE))
+rR <- sort(list.files(path = wd, pattern = "R2", full.names = TRUE))
 
 
 ## Extract sample names
 sample.names <- sapply(strsplit(basename(rF), "_"), `[`, 1)
 
+sample.names <- gsub("_[A-Z]{6}-[A-Z]{6}_L001_R[1|2]_001.fastq.gz",
+                          "",
+                          basename(rF))
+
 
 ## Check for primers ###########################################################
 ## Remove Ns from reads
-rF.fN <- file.path("filtN", basename(rF))
-rR.fN <- file.path("filtN", basename(rR))
+rF.fN <- file.path(paste0(wd, "/filtN"), basename(rF))
+rR.fN <- file.path(paste0(wd, "/filtN"), basename(rR))
 
 filterAndTrim(rF, rF.fN, rR, rR.fN, maxN = 0, multithread = TRUE)
 
 
-## Forward and reverse primer
+## Forward and reverse primer ## ADD CORRECT PRIMERS ####
 if (primer == "16S") {
-  FWD <- "GTGYCAGCMGCCGCGGTAA" # 515FB
-  REV <- "GGACTACNVGGGTWTCTAAT" # 806RB
+  FWD <- "GTGYCAGCMGCCGCGGTAA" #
+  REV <- "GGACTACNVGGGTWTCTAAT" #
 } else if (primer == "18S") {
-  FWD <- "CGGTAAYTCCAGCTCYV" # 574*_f
-  REV <- "CCGTCAATTHCTTYAART" # 1132r
+  FWD <- "CCCTGCCHTTTGTACACAC" #
+  REV <- "CCTTCYGCAGGTTCACCTAC" #
 }
 
 

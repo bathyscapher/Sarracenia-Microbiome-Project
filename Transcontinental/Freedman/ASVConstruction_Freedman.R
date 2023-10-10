@@ -9,14 +9,14 @@ library("gridExtra")
 rm(list = ls())
 
 
-# setwd("/scratch/pSMP/Freedman/Sam55/")
-setwd("/scratch/pSMP/Freedman/Samp1/")
+wd <- "Freedman/fastq/"
+# wd <- "Freedman/Samp1/"
 
 ncore <- 6 # specify number of available cores
 
 
 ## Read fastq ##################################################################
-list.files(pattern = "fastq")
+list.files(path = wd, pattern = "fastq")
 
 rF <- sort(list.files(pattern = "R1", full.names = TRUE))
 rR <- sort(list.files(pattern = "R2", full.names = TRUE))

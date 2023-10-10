@@ -8,11 +8,16 @@ library("gridExtra")
 
 
 rm(list = ls())
+gc()
+
+
+# primer <- "16S"
+primer <- "18S"
 
 if (primer == "16S") {
-  setwd("Bittleston/16S_raw_data_2015/FASTQ/")
+  wd <- "Bittleston/16S"
 } else if (primer == "18S") {
-  setwd("Bittleston/18S_raw_data_2015/FASTQ/")
+  wd <- "Bittleston/18S"
 }
 
 ncore <- 6 # specify number of available cores
@@ -21,23 +26,25 @@ ncore <- 6 # specify number of available cores
 ## Read fastq ##################################################################
 list.files(pattern = "fastq.gz")
 
-rF <- sort(list.files(pattern = "R1", full.names = TRUE))
-rR <- sort(list.files(pattern = "R2", full.names = TRUE))
+rF <- sort(list.files(path = wd, pattern = "R1", full.names = TRUE))
+rR <- sort(list.files(path = wd, pattern = "R2", full.names = TRUE))
 
 
 ## Extract sample names
-sample.names <- sapply(strsplit(basename(rF), "_"), `[`, 1)
+sample.names <- gsub(".fastq.gz",
+                     "",
+                     sapply(strsplit(basename(rF), "_"), `[`, 2))
 
 
 ## Check for primers ###########################################################
 ## Remove Ns from reads
-rF.fN <- file.path("filtN", basename(rF))
-rR.fN <- file.path("filtN", basename(rR))
+rF.fN <- file.path(paste0(wd, "/filtN"), basename(rF))
+rR.fN <- file.path(paste0(wd, "/filtN"), basename(rR))
 
 filterAndTrim(rF, rF.fN, rR, rR.fN, maxN = 0, multithread = TRUE)
 
 
-## Forward and reverse primer (choose either 16S or 18S)
+## Forward and reverse primer
 if (primer == "16S") {
   FWD <- "GTGYCAGCMGCCGCGGTAA" # 515FB
   REV <- "GGACTACNVGGGTWTCTAAT" # 806RB
@@ -71,7 +78,7 @@ cutadapt <- "/usr/bin/cutadapt"
 # system2(cutadapt, args = "--version")
 
 
-path.cut <- file.path(".", "cutPrimers")
+path.cut <- file.path(".", wd, "cutPrimers")
 if(!dir.exists(path.cut)) {
   dir.create(path.cut)
 }
@@ -110,15 +117,15 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = rF.cut[[reads]]),
 
 ### Filter and trim. Place filtered files in filtered/ subdirectory
 if (primer == "16S") {
-  rF.cut.f <- file.path("filtered", paste0(sample.names,
-                                           "_16S_R1_filt.fastq.gz"))
-  rR.cut.f <- file.path("filtered", paste0(sample.names,
-                                           "_16S_R2_filt.fastq.gz"))
+  rF.cut.f <- file.path(wd, "filtered",
+                        paste0(sample.names, "_16S_R1_filt.fastq.gz"))
+  rR.cut.f <- file.path(wd, "filtered",
+                        paste0(sample.names, "_16S_R2_filt.fastq.gz"))
 } else if (primer == "18S") {
-  rF.cut.f <- file.path("filtered", paste0(sample.names,
-                                           "_18S_R1_filt.fastq.gz"))
-  rR.cut.f <- file.path("filtered", paste0(sample.names,
-                                           "_18S_R2_filt.fastq.gz"))
+  rF.cut.f <- file.path(wd, "filtered",
+                        paste0(sample.names, "_18S_R1_filt.fastq.gz"))
+  rR.cut.f <- file.path(wd, "filtered",
+                        paste0(sample.names, "_18S_R2_filt.fastq.gz"))
 }
 
 
@@ -162,11 +169,11 @@ dadaR <- dada(rR.cut.f, err = errR, multithread = ncore)
 
 
 if (primer == "16S") {
-  saveRDS(dadaF, "dadaF_LB_16S.rds")
-  saveRDS(dadaR, "dadaR_LB_16S.rds")
+  saveRDS(dadaF, paste0(wd, "/dadaF_LB_16S.rds"))
+  saveRDS(dadaR, paste0(wd, "/dadaR_LB_16S.rds"))
 } else if (primer == "18S") {
-  saveRDS(dadaF, "dadaF_LB_18S.rds")
-  saveRDS(dadaR, "dadaR_LB_18S.rds")
+  saveRDS(dadaF, paste0(wd, "/dadaF_LB_18S.rds"))
+  saveRDS(dadaR, paste0(wd, "/dadaR_LB_18S.rds"))
 }
 
 
@@ -176,9 +183,9 @@ head(contigs[[1]])
 
 
 if (primer == "16S") {
-  saveRDS(contigs, "contigs_LB_16S.rds")
+  saveRDS(contigs, paste0(wd, "/contigs_LB_16S.rds"))
 } else if (primer == "18S") {
-  saveRDS(contigs, "contigs_LB_18S.rds")
+  saveRDS(contigs, paste0(wd, "/contigs_LB_18S.rds"))
 }
 
 
@@ -200,11 +207,11 @@ sum(seqtab.nochim) / sum(seqtab)
 
 
 if (primer == "16S") {
-  saveRDS(seqtab.nochim, "seqtab.nochim_LB_16S.rds")
-  # seqtab.nochim <- readRDS("seqtab.nochim_LB_16S.rds")
+  saveRDS(seqtab.nochim, paste0(wd, "/seqtab.nochim_LB_16S.rds"))
+  # seqtab.nochim <- readRDS(paste0(wd, "/seqtab.nochim_LB_16S.rds"))
 } else if (primer == "18S") {
-  saveRDS(seqtab.nochim, "seqtab.nochim_LB_18S.rds")
-  # seqtab.nochim <- readRDS("seqtab.nochim_LB_18S.rds")
+  saveRDS(seqtab.nochim, paste0(wd, "/seqtab.nochim_LB_18S.rds"))
+  # seqtab.nochim <- readRDS(paste0(wd, "/seqtab.nochim_LB_18S.rds"))
 }
 
 
@@ -225,22 +232,22 @@ head(track)
 ## Assign taxonomy #############################################################
 ### RDP classifier #############################################################
 taxa <- assignTaxonomy(seqtab.nochim,
-                       "../../silva_nr_v132_train_set.fa.gz",
+                       "refs/silva_nr_v132_train_set.fa.gz",
                         multithread = TRUE, verbose = TRUE)
 
 
-
 if (primer == "16S") {
-  saveRDS(taxa, "taxa_LB_16S.rds")
+  saveRDS(taxa, paste0(wd, "/taxa_LB_16S.rds"))
 } else if (primer == "18S") {
-  saveRDS(taxa, "taxa_LB_18S.rds")
+  saveRDS(taxa, paste0(wd, "/taxa_LB_18S.rds"))
 }
 
 
 ### IdTaxa and SILVA ###########################################################
 dna <- DNAStringSet(getSequences(seqtab.nochim))
 
-load("~/Desktop/SMP_unsynced/silva/SILVA_SSU_r138_2019.RData")
+load("refs/SILVA_SSU_r138_2019.RData")
+
 
 ids <- IdTaxa(dna, trainingSet, strand = "top", processors = ncore,
               verbose = TRUE)
@@ -260,7 +267,7 @@ rownames(taxa.id) <- getSequences(seqtab.nochim)
 
 
 if (primer == "16S") {
-  saveRDS(taxa.id, "taxa.id_LB_16S.rds")
+  saveRDS(taxa.id, paste0(wd, "/taxa.id_LB_16S.rds"))
 } else if (primer == "18S") {
-  saveRDS(taxa.id, "taxa.id_LB_18S.rds")
+  saveRDS(taxa.id, paste0(wd, "/taxa.id_LB_18S.rds"))
 }

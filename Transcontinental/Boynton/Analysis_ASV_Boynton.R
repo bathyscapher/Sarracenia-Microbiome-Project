@@ -1,8 +1,4 @@
-################################################################################
-################################################################################
-### SMP ASV Boynton data
-################################################################################
-
+# SMP ASV Boynton data #########################################################
 
 library("phyloseq")
 library("ggplot2")
@@ -12,12 +8,14 @@ theme_set(theme_bw(base_size = 20))
 rm(list = ls())
 
 
-setwd("/scratch/pSMP/Boynton/geo/")
-# setwd("/scratch/pSMP/Boynton/temp/")
+if (datasetsDb( ) == "geo") {
+  setwd("Boynton/geo/")
+} else (primer == "temp") {
+  setwd("Boynton/temp/")
+}
 
 
-################################################################################
-### ASV
+## ASV #########################################################################
 seqtab.nochim <- readRDS("seqtab.nochim_PB.rds")
 taxa.id <- readRDS("taxa.id_PB.rds")
 
@@ -37,7 +35,7 @@ colnames(tax_table(pb)) <- c("Domain", "Phylum", "Class", "Order", "Family",
                               "Genus", "Species")
 pb
 
-pbMeta <- read.table("~/Sarracenia-Microbiome-Project/Transcontinental/Boynton/SMP_Pool_pb.csv",
+pbMeta <- read.table("Boynton/SMP_Pool_pb.csv",
                      sep = "\t", header = TRUE)
 
 pbMeta <- sample_data(pbMeta)
@@ -49,9 +47,7 @@ sample_data(pb)
 sample_variables(pb)
 
 
-################################################################################
-### Plot overview
-
+## Plot overview ###############################################################
 plot_bar(pb, x = "Phylum", fill = "Habitat") +
   # facet_wrap( ~ Class, scales = "free", nrow = 1) +
   geom_bar(aes(color = Habitat, fill = Habitat),
@@ -62,6 +58,3 @@ plot_bar(pb, x = "Phylum", fill = "Habitat") +
 # ggsave("PB_ITS_Geographic_Phyla.pdf", width = 20, height = 20)
 # ggsave("PB_ITS_Temporal_Phyla.pdf", width = 20, height = 20)
 
-
-################################################################################
-################################################################################

@@ -9,13 +9,13 @@ library("gridExtra")
 rm(list = ls())
 
 
-primer <- "16S"
-# primer <- "18S"
+# primer <- "16S"
+primer <- "18S"
 
 if (primer == "16S") {
-  setwd("Korn/16S/")
+  wd <- "Korn/16S"
 } else if (primer == "18S") {
-  setwd("Korn/18S/")
+  wd <- "Korn/18S"
 }
 
 
@@ -25,8 +25,8 @@ ncore <- 6 # specify number of available cores
 ## Read fastq ##################################################################
 list.files(pattern = "fastq")
 
-rF <- sort(list.files(pattern = "R1", full.names = TRUE))
-rR <- sort(list.files(pattern = "R2", full.names = TRUE))
+rF <- sort(list.files(path = wd, pattern = "R1", full.names = TRUE))
+rR <- sort(list.files(path = wd, pattern = "R2", full.names = TRUE))
 
 
 ## Extract sample names
@@ -35,8 +35,8 @@ sample.names <- sapply(strsplit(basename(rF), "_"), `[`, 1)
 
 ## Check for primers ###########################################################
 ## Remove Ns from reads
-rF.fN <- file.path("filtN", basename(rF))
-rR.fN <- file.path("filtN", basename(rR))
+rF.fN <- file.path(paste0(wd, "filtN"), basename(rF))
+rR.fN <- file.path(paste0(wd, "filtN"), basename(rR))
 
 filterAndTrim(rF, rF.fN, rR, rR.fN, maxN = 0, multithread = TRUE)
 
@@ -75,7 +75,7 @@ cutadapt <- "/usr/bin/cutadapt"
 # system2(cutadapt, args = "--version")
 
 
-path.cut <- file.path(".", "cutPrimers")
+path.cut <- file.path(".", wd, "cutPrimers")
 if(!dir.exists(path.cut)) {
   dir.create(path.cut)
 }
@@ -115,14 +115,18 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = rF.cut[[reads]]),
 
 ### Filter and trim. Place filtered files in filtered/ subdirectory
 if (primer == "16S") {
-  rF.cut.f <- file.path("filtered",
+  rF.cut.f <- file.path(wd,
+                        "filtered",
                         paste0(sample.names, "_16S_R1_filt.fastq.gz"))
-  rR.cut.f <- file.path("filtered",
+  rR.cut.f <- file.path(wd,
+                        "filtered",
                         paste0(sample.names, "_16S_R2_filt.fastq.gz"))
 } else if (primer == "18S") {
-  rF.cut.f <- file.path("filtered",
+  rF.cut.f <- file.path(wd,
+                        "filtered",
                         paste0(sample.names, "_18S_R1_filt.fastq.gz"))
-  rR.cut.f <- file.path("filtered",
+  rR.cut.f <- file.path(wd,
+                        "filtered",
                         paste0(sample.names, "_18S_R2_filt.fastq.gz"))
 }
 
@@ -191,6 +195,8 @@ if (primer == "16S") {
   saveRDS(contigs, "contigs_RK_18S.rds")
 }
 
+# contigs <- readRDS("contigs_RK_16S.rds")
+
 
 ## Construct ASV table #########################################################
 seqtab <- makeSequenceTable(contigs)
@@ -210,7 +216,7 @@ sum(seqtab.nochim) / sum(seqtab)
 
 if (primer == "16S") {
   saveRDS(seqtab.nochim, "seqtab.nochim_RK_16S.rds")
-  # seqtab.nochim <- readRDS("seqtab.nochim_RK_16S.rds")
+  seqtab.nochim <- readRDS("seqtab.nochim_RK_16S.rds")
 } else if (primer == "18S") {
   saveRDS(seqtab.nochim, "seqtab.nochim_RK_18S.rds")
   # seqtab.nochim <- readRDS("seqtab.nochim_RK_18S.rds")
@@ -234,7 +240,7 @@ head(track)
 ## Assign taxonomy #############################################################
 ### RDP classifier #############################################################
 taxa <- assignTaxonomy(seqtab.nochim,
-                       "../../refs/",
+                       "refs/silva_nr_v132_train_set.fa.gz",
                        multithread = TRUE, verbose = TRUE)
 
 
@@ -248,7 +254,7 @@ if (primer == "16S") {
 ### IdTaxa and SILVA ###########################################################
 dna <- DNAStringSet(getSequences(seqtab.nochim))
 
-load("../../SILVA_SSU_r138_2019.RData")
+load("refs/SILVA_SSU_r138_2019.RData")
 
 ids <- IdTaxa(dna,
               trainingSet,
@@ -264,6 +270,7 @@ taxa.id <- t(sapply(ids, function(x) {
   taxa <- x$taxon[m]
   taxa
 }))
+
 
 colnames(taxa.id) <- ranks
 rownames(taxa.id) <- getSequences(seqtab.nochim)

@@ -9,31 +9,31 @@ library("gridExtra")
 rm(list = ls())
 
 
-setwd("/Young_Greenhouse/")
+wd <- "Young_GH/GreenhouseExpData"
 
 ncore <- 6 # specify number of available cores
 
 
 ## Read fastq ##################################################################
-list.files(pattern = "fastq")
+list.files(path = wd, pattern = "fastq")
 
-rF <- sort(list.files(pattern = "R1", full.names = TRUE))
-rR <- sort(list.files(pattern = "R2", full.names = TRUE))
+rF <- sort(list.files(path = wd, pattern = "R1", full.names = TRUE))
+rR <- sort(list.files(path = wd, pattern = "R2", full.names = TRUE))
 
 
 ## Extract sample names
-sample.names <- sapply(strsplit(basename(rF), "_"), `[`, 1)
+sample.names <- substring(basename(rF), 1, nchar(basename(rF)) - 9)
 
 
 ## Check for primers ###########################################################
 ## Remove Ns from reads
-rF.fN <- file.path("filtN", basename(rF))
-rR.fN <- file.path("filtN", basename(rR))
+rF.fN <- file.path(paste0(wd, "/filtN"), basename(rF))
+rR.fN <- file.path(paste0(wd, "/filtN"), basename(rR))
 
 filterAndTrim(rF, rF.fN, rR, rR.fN, maxN = 0, multithread = TRUE)
 
 
-## Forward and reverse primer for 16S
+## Forward and reverse primer
 FWD <- "CCTACGGGNGGCWGCAG" # 341F
 REV <- "GACTACHVGGGTATCTAATCC" # 805R
 
@@ -62,7 +62,7 @@ cutadapt <- "/usr/bin/cutadapt"
 # system2(cutadapt, args = "--version")
 
 
-path.cut <- file.path(".", "cutPrimers")
+path.cut <- file.path(paste0(wd, "cutPrimers"))
 if(!dir.exists(path.cut)) {
   dir.create(path.cut)
 }
@@ -101,8 +101,10 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = rF.cut[[reads]]),
 
 
 ### Filter and trim. Place filtered files in filtered/ subdirectory
-rF.cut.f <- file.path("filtered", paste0(sample.names, "_R1_filt.fastq.gz"))
-rR.cut.f <- file.path("filtered", paste0(sample.names, "_R2_filt.fastq.gz"))
+rF.cut.f <- file.path(paste0(wd, "/filtered"),
+                      paste0(sample.names, "_R1_filt.fastq.gz"))
+rR.cut.f <- file.path(paste0(wd, "/filtered"),
+                      paste0(sample.names, "_R2_filt.fastq.gz"))
 
 names(rF.cut.f) <- sample.names
 names(rR.cut.f) <- sample.names
@@ -143,8 +145,8 @@ dadaR <- dada(rR.cut.f, err = errR, multithread = ncore)
 # dadaFs[[1]]
 
 
-saveRDS(dadaF, "dadaF_EY.rds")
-saveRDS(dadaR, "dadaR_EY.rds")
+saveRDS(dadaF, paste0(wd, "/dadaF_EY_GH.rds"))
+saveRDS(dadaR, paste0(wd, "/dadaR_EY_GH.rds"))
 
 
 ## Merge paired reads ##########################################################
@@ -152,7 +154,7 @@ contigs <- mergePairs(dadaF, rF.cut.f, dadaR, rR.cut.f, verbose = TRUE)
 head(contigs[[1]])
 
 
-saveRDS(contigs, "contigs_EY_GH.rds")
+saveRDS(contigs, paste0(wd, "/contigs_EY_GH.rds"))
 
 
 ## Construct ASV table #########################################################
@@ -171,8 +173,8 @@ dim(seqtab.nochim)
 sum(seqtab.nochim) / sum(seqtab)
 
 
-saveRDS(seqtab.nochim, "seqtab.nochim_EY_GH.rds")
-# seqtab.nochim <- readRDS("seqtab.nochim_EY_GH.rds")
+saveRDS(seqtab.nochim, paste0(wd, "/seqtab.nochim_EY_GH.rds"))
+# seqtab.nochim <- readRDS(paste0(wd, "/seqtab.nochim_EY_GH.rds"))
 
 
 ## Track reads through the pipeline ############################################
@@ -192,16 +194,16 @@ head(track)
 ## Assign taxonomy #############################################################
 ### RDP classifier #############################################################
 taxa <- assignTaxonomy(seqtab.nochim,
-                       "../../silva_nr_v132_train_set.fa.gz",
+                       "refs/silva_nr_v132_train_set.fa.gz",
                        multithread = TRUE, verbose = TRUE)
 
-saveRDS(taxa, "taxa_EY.rds")
+saveRDS(taxa, paste0(wd, "/taxa_EY_GH.rds"))
 
 
 ## IdTaxa and SILVA ############################################################
 dna <- DNAStringSet(getSequences(seqtab.nochim))
 
-load("../../SILVA_SSU_r138_2019.RData")
+load("refs/SILVA_SSU_r138_2019.RData")
 
 
 ids <- IdTaxa(dna, trainingSet, strand = "top", processors = ncore,
@@ -219,4 +221,4 @@ taxa.id <- t(sapply(ids, function(x) {
 colnames(taxa.id) <- ranks
 rownames(taxa.id) <- getSequences(seqtab.nochim)
 
-saveRDS(taxa.id, "taxa.id_EY_GH.rds")
+saveRDS(taxa.id, paste0(wd, "/taxa.id_EY_GH.rds"))
