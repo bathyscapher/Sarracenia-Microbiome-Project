@@ -5,6 +5,7 @@ library("ShortRead")
 library("DECIPHER")
 library("gridExtra")
 
+# renamed Bra_Pl_7R_GGATAA-AGGTGT_L001_R2_001.fastq.gz to Bra_Pl_7R2_GGATAA-AGGTGT_L001_R2_001.fastq.gz
 
 rm(list = ls())
 gc()
@@ -30,11 +31,18 @@ rR <- sort(list.files(path = wd, pattern = "R2", full.names = TRUE))
 
 
 ## Extract sample names
-sample.names <- sapply(strsplit(basename(rF), "_"), `[`, 1)
-
 sample.names <- gsub("_[A-Z]{6}-[A-Z]{6}_L001_R[1|2]_001.fastq.gz",
                           "",
                           basename(rF))
+# sample.names2 <- gsub("_[A-Z]{6}-[A-Z]{6}_L001_R[1|2]_001.fastq.gz",
+#                      "",
+#                      basename(rR))
+#
+# setdiff(sample.names, sample.names2)
+# setdiff(sample.names2, sample.names)
+#
+# duplicated(sample.names2)
+# sample.names[44]
 
 
 ## Check for primers ###########################################################
@@ -45,13 +53,24 @@ rR.fN <- file.path(paste0(wd, "/filtN"), basename(rR))
 filterAndTrim(rF, rF.fN, rR, rR.fN, maxN = 0, multithread = TRUE)
 
 
-## Forward and reverse primer ## ADD CORRECT PRIMERS ####
+
+# nseq <- function(f) { length(readFastq(f)) }
+# nseqF <- sapply(rF, nseq)
+# nseqR <- sapply(rR, nseq)
+#
+#
+# RF <- data.frame(nseqF, nseqR)
+# head(RF)
+# RF[RF$nseqF != RF$nseqR, ]
+
+
+## Forward and reverse primer
 if (primer == "16S") {
-  FWD <- "GTGYCAGCMGCCGCGGTAA" #
-  REV <- "GGACTACNVGGGTWTCTAAT" #
+  FWD <- "GTGYCAGCMGCCGCGGTAA" # 515FB
+  REV <- "GGACTACNVGGGTWTCTAAT" # 806RB
 } else if (primer == "18S") {
-  FWD <- "CCCTGCCHTTTGTACACAC" #
-  REV <- "CCTTCYGCAGGTTCACCTAC" #
+  FWD <- "CCCTGCCHTTTGTACACAC" # 1380F (18S EMP primer)
+  REV <- "CCTTCYGCAGGTTCACCTAC" # 1510R
 }
 
 
@@ -79,7 +98,7 @@ cutadapt <- "/usr/bin/cutadapt"
 # system2(cutadapt, args = "--version")
 
 
-path.cut <- file.path(".", "cutPrimers")
+path.cut <- file.path(".", wd, "cutPrimers")
 if(!dir.exists(path.cut)) {
   dir.create(path.cut)
 }
@@ -119,14 +138,14 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = rF.cut[[reads]]),
 
 ### Filter and trim. Place filtered files in filtered/ subdirectory
 if (primer == "16S") {
-  rF.cut.f <- file.path("filtered",
+  rF.cut.f <- file.path(paste0(wd, "/filtered"),
                         paste0(sample.names, "_16S_R1_filt.fastq.gz"))
-  rR.cut.f <- file.path("filtered",
+  rR.cut.f <- file.path(paste0(wd, "/filtered"),
                         paste0(sample.names, "_16S_R2_filt.fastq.gz"))
 } else if (primer == "18S") {
-  rF.cut.f <- file.path("filtered",
+  rF.cut.f <- file.path(paste0(wd, "/filtered"),
                         paste0(sample.names, "_18S_R1_filt.fastq.gz"))
-  rR.cut.f <- file.path("filtered",
+  rR.cut.f <- file.path(paste0(wd, "/filtered"),
                         paste0(sample.names, "_18S_R2_filt.fastq.gz"))
 }
 
@@ -139,6 +158,14 @@ out <- filterAndTrim(rF.fN, rF.cut.f, rR.fN, rR.cut.f,
                      maxN = 0, maxEE = c(2, 2), minLen = 100,
                      truncQ = 2, rm.phix = TRUE,
                      compress = TRUE, multithread = ncore, verbose = TRUE)
+
+for (i in length(rF.cut.f)) {
+  if (file.exists(rF.cut.f[i])) {
+    "exists"
+  } else {
+    message(paste(rF.cut.f[i]), "missing")
+  }
+}
 
 
 ### Plot quality profiles exemplarily
@@ -170,29 +197,24 @@ dadaR <- dada(rR.cut.f, err = errR, multithread = ncore)
 # dadaFs[[1]]
 
 if (primer == "16S") {
-  saveRDS(dadaF, "dadaF_RK_16S.rds")
-  saveRDS(dadaR, "dadaR_RK_16S.rds")
+  saveRDS(dadaF, "dadaF_EG_16S.rds")
+  saveRDS(dadaR, "dadaR_EG_16S.rds")
 } else if (primer == "18S") {
-  saveRDS(dadaF, "dadaF_RK_18S.rds")
-  saveRDS(dadaR, "dadaR_RK_18S.rds")
+  saveRDS(dadaF, "dadaF_EG_18S.rds")
+  saveRDS(dadaR, "dadaR_EG_18S.rds")
 }
 
 
-## Merge paired reads for 16S, concatenate them for 18S ########################
-if (primer == "16S") {
-  contigs <- mergePairs(dadaF, rF.cut.f, dadaR, rR.cut.f, verbose = TRUE)
-} else if (primer == "18S") {
-  contigs <- mergePairs(dadaF, rF.cut.f, dadaR, rR.cut.f, verbose = TRUE,
-                        justConcatenate = TRUE)
-}
-
+## Merge paired reads for 16S ##################################################
+contigs <- mergePairs(dadaF, rF.cut.f, dadaR, rR.cut.f, verbose = TRUE)
 head(contigs[[1]])
 
 
 if (primer == "16S") {
-  saveRDS(contigs, "contigs_RK_16S.rds")
+  saveRDS(contigs, "contigs_EG_16S.rds")
+  # readRDS("contigs_EG_16S.rds")
 } else if (primer == "18S") {
-  saveRDS(contigs, "contigs_RK_18S.rds")
+  saveRDS(contigs, "contigs_EG_18S.rds")
 }
 
 
@@ -213,11 +235,11 @@ sum(seqtab.nochim) / sum(seqtab)
 
 
 if (primer == "16S") {
-  saveRDS(seqtab.nochim, "seqtab.nochim_RK_16S.rds")
-  # seqtab.nochim <- readRDS("seqtab.nochim_RK_16S.rds")
+  saveRDS(seqtab.nochim, "seqtab.nochim_EG_16S.rds")
+  # seqtab.nochim <- readRDS("seqtab.nochim_EG_16S.rds")
 } else if (primer == "18S") {
-  saveRDS(seqtab.nochim, "seqtab.nochim_RK_18S.rds")
-  # seqtab.nochim <- readRDS("seqtab.nochim_RK_18S.rds")
+  saveRDS(seqtab.nochim, "seqtab.nochim_EG_18S.rds")
+  # seqtab.nochim <- readRDS("seqtab.nochim_EG_18S.rds")
 }
 
 
@@ -238,21 +260,21 @@ head(track)
 ## Assign taxonomy #############################################################
 ### RDP classifier #############################################################
 taxa <- assignTaxonomy(seqtab.nochim,
-                       "../../refs/",
+                       "refs/silva_nr_v132_train_set.fa.gz",
                        multithread = TRUE, verbose = TRUE)
 
 
 if (primer == "16S") {
-  saveRDS(taxa, "taxa_RK_16S.rds")
+  saveRDS(taxa, "taxa_EG_16S.rds")
 } else if (primer == "18S") {
-  saveRDS(taxa, "taxa_RK_18S.rds")
+  saveRDS(taxa, "taxa_EG_18S.rds")
 }
 
 
 ### IdTaxa and SILVA ###########################################################
 dna <- DNAStringSet(getSequences(seqtab.nochim))
 
-load("../../SILVA_SSU_r138_2019.RData")
+load("refs/SILVA_SSU_r138_2019.RData")
 
 ids <- IdTaxa(dna,
               trainingSet,
@@ -273,7 +295,7 @@ colnames(taxa.id) <- ranks
 rownames(taxa.id) <- getSequences(seqtab.nochim)
 
 if (primer == "16S") {
-  saveRDS(taxa.id, "taxa.id_RK_16S.rds")
+  saveRDS(taxa.id, "taxa.id_EG_16S.rds")
 } else if (primer == "18S") {
-  saveRDS(taxa.id, "taxa.id_RK_18S.rds")
+  saveRDS(taxa.id, "taxa.id_EG_18S.rds")
 }

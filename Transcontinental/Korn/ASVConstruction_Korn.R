@@ -35,8 +35,8 @@ sample.names <- sapply(strsplit(basename(rF), "_"), `[`, 1)
 
 ## Check for primers ###########################################################
 ## Remove Ns from reads
-rF.fN <- file.path(paste0(wd, "filtN"), basename(rF))
-rR.fN <- file.path(paste0(wd, "filtN"), basename(rR))
+rF.fN <- file.path(paste0(wd, "/filtN"), basename(rF))
+rR.fN <- file.path(paste0(wd, "/filtN"), basename(rR))
 
 filterAndTrim(rF, rF.fN, rR, rR.fN, maxN = 0, multithread = TRUE)
 

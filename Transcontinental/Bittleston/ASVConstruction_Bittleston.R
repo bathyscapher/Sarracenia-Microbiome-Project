@@ -11,8 +11,8 @@ rm(list = ls())
 gc()
 
 
-# primer <- "16S"
-primer <- "18S"
+primer <- "16S"
+# primer <- "18S"
 
 if (primer == "16S") {
   wd <- "Bittleston/16S"
