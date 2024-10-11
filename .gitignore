@@ -2,7 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
-*rds
+**.pdf
 *zip
 *tar.gz
 refs/
