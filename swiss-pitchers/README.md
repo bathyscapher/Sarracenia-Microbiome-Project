@@ -1,5 +1,5 @@
 # Community structure in *Sarracenia purpurea* microcosms and adjacent peatlands
-This repository contains code to reproduce all analysis in [INSERT THE LINK HERE](www.unifrtheses.ch).
+This repository contains code to reproduce all analysis in [the PhD thesis "Community structure in _Sarracenia purpurea_ microcosms and adjacent peatlands"](https://www.fr.ch/de/kub/app/master_cat/991018731784005509).
 
 Raw sequences are publicly [available on the servers of the National Center for Biotechnology Information (NCBI) under the accession number PRJNA733308 "Sarracenia microbiome project"](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA733308).
 
