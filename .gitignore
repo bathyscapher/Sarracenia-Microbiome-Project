@@ -2,14 +2,12 @@
 .Rhistory
 .RData
 .Ruserdata
+*rds
 *zip
 *tar.gz
 refs/
-**/16S
-**/18S
+**/16s
+**/18s
 **/geographic
 **/temporal
-**/Greenhouse
-**/GreenhouseExpData
-**/fastq
 
