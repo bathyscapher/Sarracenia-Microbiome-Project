@@ -1,11 +1,4 @@
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-### SMP Pitcher microbiome and prey composition
-### Authors: Rachel Korn
-### korn@cumulonimbus.at University of Fribourg 2020
-################################################################################
+# SMP Pitcher microbiome and prey composition ##################################
 
 
 library("phyloseq")
@@ -16,8 +9,7 @@ library("vegan")
 library("cocorresp")
 
 
-rm(list = ls())
-setwd("~/Sarracenia-Microbiome-Project/Thesis")
+rm(list = ls()); gc()
 
 
 set.seed(34706)
@@ -30,7 +22,7 @@ gradCol <- c("#D55E00", "#E69F00", "#F0E442", "#009E73", "#56B4E9")
 
 ################################################################################
 ### Pitcher data
-prok.a <- readRDS("rds/SMP_prok.a.RDS")
+prok.a <- readRDS("fastq/16s/")
 euk.a <- readRDS("rds/SMP_euk.a.RDS")
 smp <- readRDS("rds/SMP_smp.RDS")
 

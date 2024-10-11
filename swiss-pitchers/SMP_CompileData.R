@@ -1,25 +1,17 @@
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-### SMP Read taxa (ASV), add metadata and much more
-### Authors: Rachel Korn
-### korn@cumulonimbus.at University of Fribourg 2019/2020
-################################################################################
-
+### SMP Read taxa (ASV), add metadata and much more ############################
 
 library("phyloseq")
-rm(list = ls())
+
+rm(list = ls()); gc()
 
 
 ################################################################################
 ### Arguments
+# smpDir <- getwd()
+asvDir <- "./fastq/"
 
-smpDir <- "~/Sarracenia-Microbiome-Project/Thesis/"
-asvDir <- "~/Seafile/SMP_results"
 
-
-source("~/Sarracenia-Microbiome-Project/Thesis/SMP_readMetadataAndASV.R")
+source("SMP_readMetadataAndASV.R")
 
 
 ################################################################################
@@ -80,7 +72,9 @@ saveRDS(smp, "rds/SMP_smp.RDS")
 ################################################################################
 ### Read moss taxa summarized by sector replicate
 ### Prokaryotes
-moss.prok.l <- readTaxa(primer = "16S", mosses = "only", merge.mosses = TRUE,
+moss.prok.l <- readTaxa(primer = "16S",
+                        mosses = "only",
+                        merge.mosses = TRUE,
                         glom = TRUE)
 moss.prok.l
 
@@ -95,7 +89,9 @@ rm(moss.prok.l, moss, moss.a, moss.s)
 
 
 ### Eukaryotes
-moss.euk.l <- readTaxa(primer = "18S", mosses = "only", merge.mosses = TRUE,
+moss.euk.l <- readTaxa(primer = "18S",
+                       mosses = "only",
+                       merge.mosses = TRUE,
                        glom = TRUE)
 moss.euk.l
 
@@ -138,7 +134,9 @@ saveRDS(moss, "rds/SMP_moss20.RDS")
 ################################################################################
 ### Read moss taxa separately by sector replicate
 ### Prokaryotes
-moss.prok.l <- readTaxa(primer = "16S", mosses = "only", merge.mosses = FALSE,
+moss.prok.l <- readTaxa(primer = "16S",
+                        mosses = "only",
+                        merge.mosses = FALSE,
                         glom = TRUE)
 moss.prok.l
 
@@ -153,7 +151,9 @@ rm(moss.prok.l, moss, moss.a, moss.s)
 
 
 ### Eukaryotes
-moss.euk.l <- readTaxa(primer = "18S", mosses = "only", merge.mosses = FALSE,
+moss.euk.l <- readTaxa(primer = "18S",
+                       mosses = "only",
+                       merge.mosses = FALSE,
                        glom = TRUE)
 moss.euk.l
 
@@ -190,9 +190,3 @@ moss
 
 ## Save
 saveRDS(moss, "rds/SMP_moss40.RDS")
-
-
-################################################################################
-################################################################################
-################################################################################
-################################################################################

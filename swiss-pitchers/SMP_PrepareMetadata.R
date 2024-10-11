@@ -1,11 +1,4 @@
-################################################################################
-################################################################################
-################################################################################
-################################################################################
 ### SMP Prepare metadata
-### Authors: Rachel Korn
-### korn@cumulonimbus.at University of Fribourg 2020
-################################################################################
 
 
 library("phyloseq")
@@ -18,10 +11,7 @@ library("gplots")
 library("reshape2")
 
 
-rm(list = ls())
-setwd("~/Sarracenia-Microbiome-Project/Thesis")
-
-
+rm(list = ls()); gc()
 set.seed(34706)
 
 
@@ -60,7 +50,8 @@ smpMeta.df <- smpMeta.df[smpMeta.df$Site != "NC" &
 
 
 ### Prey composition
-prey <- read.table("csv/SMP_Prey_clean.csv", sep = "\t", header = TRUE)
+prey <- read.table("csv/SMP_Prey_clean.csv",
+                   sep = "\t", header = TRUE)
 
 
 rownames(prey) <- prey$FullID
@@ -82,11 +73,12 @@ orditorp(prey.nmds, display = "species", col = "red", air = 0.01)
 orditorp(prey.nmds, display = "sites", cex = 0.75, air = 0.01)
 
 
-prey.nmds.sc <- as.data.frame(scores(prey.nmds)[, 1])
+prey.nmds.sc <- as.data.frame(scores(prey.nmds)$sites[, 1])
 names(prey.nmds.sc) <- "prey"
 prey.nmds.sc$FullID <- rownames(prey.nmds.sc)
 
-smpMeta.df <- merge(smpMeta.df, prey.nmds.sc, by = "FullID", all = TRUE)
+smpMeta.df <- merge(smpMeta.df, prey.nmds.sc,
+                    by = "FullID", all = TRUE)
 
 
 ### Leaf microbiome
@@ -102,12 +94,13 @@ stressplot(leaf.prok.nmds)
 # plot(goodness(leaf.prok.nmds))
 
 
-leaf.prok.nmds.sc <- as.data.frame(scores(leaf.prok.nmds)[, 1])
+leaf.prok.nmds.sc <- as.data.frame(scores(leaf.prok.nmds)$sites[, 1])
 names(leaf.prok.nmds.sc) <- "mb.leaf.prok"
 leaf.prok.nmds.sc$FullID <- rownames(leaf.prok.nmds.sc)
 
 
-smpMeta.df <- merge(smpMeta.df, leaf.prok.nmds.sc, by = "FullID", all = TRUE)
+smpMeta.df <- merge(smpMeta.df, leaf.prok.nmds.sc,
+                    by = "FullID", all = TRUE)
 
 
 ## Eukaryotes
@@ -122,12 +115,13 @@ stressplot(leaf.euk.nmds)
 # plot(goodness(leaf.euk.nmds))
 
 
-leaf.euk.nmds.sc <- as.data.frame(scores(leaf.euk.nmds)[, 1])
+leaf.euk.nmds.sc <- as.data.frame(scores(leaf.euk.nmds)$sites[, 1])
 names(leaf.euk.nmds.sc) <- "mb.leaf.euk"
 leaf.euk.nmds.sc$FullID <- rownames(leaf.euk.nmds.sc)
 
 
-smpMeta.df <- merge(smpMeta.df, leaf.euk.nmds.sc, by = "FullID", all = TRUE)
+smpMeta.df <- merge(smpMeta.df, leaf.euk.nmds.sc,
+                    by = "FullID", all = TRUE)
 
 
 ################################################################################
@@ -143,7 +137,7 @@ moss.prok.nmds
 stressplot(moss.prok.nmds)
 
 
-moss.prok.nmds.sc <- as.data.frame(scores(moss.prok.nmds)[, 1])
+moss.prok.nmds.sc <- as.data.frame(scores(moss.prok.nmds)$sites[, 1])
 names(moss.prok.nmds.sc) <- "mb.moss.prok"
 moss.prok.nmds.sc$FullID <- rownames(moss.prok.nmds.sc)
 sample_data(moss.prok.a)$mb.moss.prok <- moss.prok.nmds.sc$mb.moss.prok
@@ -164,7 +158,7 @@ moss.euk.nmds
 stressplot(moss.euk.nmds)
 
 
-moss.euk.nmds.sc <- as.data.frame(scores(moss.euk.nmds)[, 1])
+moss.euk.nmds.sc <- as.data.frame(scores(moss.euk.nmds)$sites[, 1])
 names(moss.euk.nmds.sc) <- "mb.moss.euk"
 moss.euk.nmds.sc$FullID <- rownames(moss.euk.nmds.sc)
 sample_data(moss.euk.a)$mb.moss.euk <- moss.euk.nmds.sc$mb.moss.euk
@@ -177,7 +171,9 @@ smpMeta.df <- merge(smpMeta.df, sample_data(moss.euk.a)[, c(2, 6, 24)],
 ## Convert factor to dummy
 smpMeta.df$SampleColor <- as.factor(smpMeta.df$SampleColor)
 smpMeta.df$SampleColor <- ordered(smpMeta.df$SampleColor,
-                                  levels = c("clear", "cloudy", "green",
+                                  levels = c("clear",
+                                             "cloudy",
+                                             "green",
                                              "brown"))
 smpMeta.df$SampleColorDummy <- as.integer(unclass(smpMeta.df$SampleColor))
 
